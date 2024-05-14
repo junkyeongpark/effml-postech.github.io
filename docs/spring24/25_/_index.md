@@ -5,6 +5,8 @@ weight: 1
 ---
 
 # Merging Text Transformer Models from Different Initializations
+*Posted by: Kyungtae Kim, Minwoo Kim*
+
 *Authors: Neha Verma (Johns Hopkins University), Maha Elbayad (Meta)*
 
 Although recent works on model merging have exhibited low- or zero-barrier mode connectivity between models with different initialization, model merging on transformer architecture has not yet been studied extensively. The application of previous merging techniques on the transformer structure is limited due to its unique structural characteristics, such as residual connection, multi-head attention (MHA), and sequential input. The paper merges separate transformer minima, proposing a new model merging technique to investigate the relationship between the pre-trained models' minima in the loss landscape. Using permutation-based model merging, authors found lower loss barriers between minima compared to other model merging techniques such as model averaging. The results showed that the model has less sharp and isolated minima than previously expected.
