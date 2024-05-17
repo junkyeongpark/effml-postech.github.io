@@ -107,6 +107,7 @@ Each model has the following properties:
   2. Different random initialization and random ordering.
   3. Same original BERT vocabulary and tokenizer.
 
+
 To test the baseline method, they used the masked language modeling task while employing the validation set of the [Wikitext-103 benchmark](https://arxiv.org/abs/1609.07843) as the evaluation data. Next, they extracted over one million sentences from the [Books corpus](https://www.cv-foundation.org/openaccess/content_iccv_2015/html/Zhu_Aligning_Books_and_ICCV_2015_paper.html).
 In classification tasks, they employed fine-tuned models with randomly initialized classification head with pooling layer and classification layer weights. The authors kept the head initializations the same across the models. They used the General Language Understanding Evaluation ([GLUE](https://arxiv.org/abs/1804.07461)) benchmark excluding [WNLI](https://arxiv.org/abs/1810.04805).
 As a baseline for comparison, vanilla averaging is defined as:
@@ -120,7 +121,7 @@ In this work, they defined new evaluation definitions. They defined loss-barrier
 \max_{\lambda} \mathcal{L}(\lambda\theta_A + (1 - \lambda)\theta_B) - \frac{1}{2}(\mathcal{L}(\theta_A) + \mathcal{L}(\theta_B))
 {{< /katex >}}
 
-A masking probability of {{< katex >}}p = 0.15{{< /katex >}} across block sizes of 128 tokens were used to compute MLM loss\pseudo-perplexity. For {{< katex >}}N{{< /katex >}} masked samples in the text **W**, pseudo-perplexity is defined as:
+A masking probability of {{< katex >}}p = 0.15{{< /katex >}} across block sizes of 128 tokens were used to compute MLM loss/pseudo-perplexity. For {{< katex >}}N{{< /katex >}} masked samples in the text {{< katex >}}\textbf{W}{{< /katex >}}, pseudo-perplexity is defined as:
 
 {{< katex display=true >}}
 \mathrm{Pseudo-PPL}(\textbf{W};\theta) = 2^{-\frac{1}{N} \sum_{i=1}^{N}\log_{2}\,p_\theta(\omega_i|\textbf{W}_{\backslash{i}})}
@@ -128,7 +129,7 @@ A masking probability of {{< katex >}}p = 0.15{{< /katex >}} across block sizes 
 
 ## Results
 ### By component
-First, they found that the merging all feed-forward sublayers and/or merging all multi-headed attention sublayers reducing the pseudo-perplexity compared to the baseline. Remakably, combination of them leads to reduce the perplexity about 7 times at λ = 0.5 (See Figure 3). The reduced barrier suggests that a lower loss path has formed among these models, indicating a connection between the minima with a barrier similar to what they report.
+First, they found that the merging all feed-forward sublayers and/or merging all multi-headed attention sublayers reduces the pseudo-perplexity compared to the baseline. Remakably, combination of them leads to the reducuction of the perplexity by about 7 times at {{< katex >}}\lambda = 0.5{{< /katex >}} (See Figure 3). The reduced barrier suggests that a lower loss path has formed among these models, indicating a connection between the minima with a barrier similar to what they report.
 
 <p align="center">
     <img src="figures/Figure3.png" width="300"> 
@@ -138,14 +139,14 @@ First, they found that the merging all feed-forward sublayers and/or merging all
 Figure 3. Results of pseudo-perplexity scores of 10 MultiBERTs with vanilla averaging, merging all feed-forward sublayers, and merging all multi-headed attention sublayers and all multi-headed attention sublayers.
 </p>
 
-Next, they investigated how well these Transformers learn similar representations of the model, they compute the average feature correlations both of the Feed-Forward layer and attention pre-merged/merged with our method. The aligned models show higher average feature correlations than the orignal models. However, it is note that these values are no more than 0.3 because some pre-trained transformers can be sparsely activated and be pruned heavily leading to lower average feature correlations (Li et al.,2023; Dalvi et al., 2020).
+Next, they investigated how well these Transformers learn similar representations of the model. The average feature correlations of both the Feed-Forward layer and the attention pre-merged/merged with our method are calculated. The aligned models show higher average feature correlations than the orignal models. However, these values are no more than 0.3 because some pre-trained transformers can be sparsely activated and be pruned heavily leading to lower average feature correlations (Li et al.,2023; Dalvi et al., 2020).
 
 <p align="center">
     <img src="figures/Figure4.png" width="300"> 
 </p>
 
 <p style="text-align:center; font-style: italic;">
-Figure 4. Results of Average feature correlations between 10 masked language model pairs.
+Figure 4. Results of average feature correlations between 10 masked language model pairs.
 </p>
 
 
@@ -247,7 +248,7 @@ Figure 7. Loss barrier curves for 8 GLUE tasks for vanilla interpolation and our
 <table style="border: 2px;" align="center">  <tr>
     <td>    </td>
     <td colspan="2"> Vanilla averaging </td>
-    <td colspan="2"> Ours </td>
+    <td colspan="2"> Proposed </td>
   </tr><tr>
     <td >  </td>
     <td > Barrier </td>
