@@ -100,9 +100,220 @@ The input and output of both sublayers are added to create a new output. This im
 
 Since the input to each layer must be permuted ({{< katex >}}\text{P}x{{< /katex >}}), and the output of each layer is also permuted ({{< katex >}}\text{P}x_f^r{{< /katex >}}), the entire transformer architecture uses the same {{< katex >}}\{\text{P}, \text{P}^{\text{T}}\}{{< /katex >}} matrices for all weights involved in residual connections.
 
+## Models, Tasks, Datasets and Evaluation settings
+In this work, they investigate 5 different BERT models from the MultiBERTs reproductions seeds 1 through 5 (See ['BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding'](https://aclanthology.org/N19-1423/) & ['The MultiBERTs: BERT Reproductions for Robustness Analysis'](https://arxiv.org/abs/2106.16163)).
+Each model has the following properties:
+  1. Bert-base-uncased checkpoint.
+  2. Different random initialization and random ordering.
+  3. Same original BERT vocabulary and tokenizer.
+To test base method, they use the masked language modeling task employing the validation set of the [Wikitext-103 benchmark](https://arxiv.org/abs/1609.07843) as evaluation data. Then, they extract over one million sentenses from the [Books corpus](https://www.cv-foundation.org/openaccess/content_iccv_2015/html/Zhu_Aligning_Books_and_ICCV_2015_paper.html).
+In classification tasks, they employ fine-tuned models with a randomly initialized classification head with pooling layer and classification layer weights. They keep the head initializations the same across models. They use the General Language Understanding Evaluation ([GLUE](https://arxiv.org/abs/1804.07461)) benchmark excluding [WNLI](https://arxiv.org/abs/1810.04805).
+As a baseline for comparison, vanilla averaging is defined as:
+{{< katex display=true >}}
+\theta_{avg} = \frac{1}{2}(\theta_A+\theta_B)
+{{< /katex >}}
+
+
+In this work, they define some Evaluation definitions. They define loss-barriers as (['M. The lottery ticket hypothesis: Finding sparse, trainable neural networks. In International Conference on Learning Representations'](https://arxiv.org/abs/1803.03635)):
+{{< katex display=true >}}
+\max_{\lambda} \mathcal{L}(\lambda\theta_A + (1 - \lambda)\theta_B) - \frac{1}{2}(\mathcal{L}(\theta_A) + \mathcal{L}(\theta_B))
+{{< /katex >}}
+
+A masking probability of *p* = 0.15 across block sizes of 128 tokens use to compute MLM loss\pseudo-perplexity. For *N* masked samples in the text **W**, pseudo-perplexity defined as:
+{{< katex display=true >}}
+\mathrm{Pseudo-PPL}(\textbf{W};\theta) = 2^{-\frac{1}{N} \sum_{i=1}^{N}\log_{2}\,p_\theta(\omega_i|\textbf{W}_{\backslash{i}})}
+{{< /katex >}}
+
 ## Results
+### By component
+Firstly, they found that the merging all feed-forward sublayers and/or merging all multi-headed attention sublayers reducing the pseudo-perplexity compared to the baseline. Remakably, combination of them leads to reduce the perplexity about 7 times at λ = 0.5 (See Figure 3). The reduced barrier suggests that a lower loss path has formed among these models, indicating a connection between the minima with a barrier similar to what they report.
+<p align="center">
+    <img src="figures/Figure3.png" width="300"> 
+</p>
+<p style="text-align:center; font-style: italic;">
+Figure 3. Results of pseudo-perplexity scores of 10 MultiBERTs with vanilla averaging, merging all feed-forward sublayers, and merging all multi-headed attention sublayers and all multi-headed attention sublayers.
+</p>
+
+
+Next, they investigate how well these Transformers learn similar representations of the model, they compute the average feature correlations both of the Feed-Forward layer and attention pre-merged/merged with our method. The aligned models show higher average feature correlations than the orignal models. However, It is note that these values are no more than 0.3 because some pre-trained transformers can be sparsely activated and be pruned heavily leading to lower average feature correlations (Li et al.,2023; Dalvi et al., 2020).
+<p align="center">
+    <img src="figures/Figure4.png" width="300"> 
+</p>
+
+<p style="text-align:center; font-style: italic;">
+Figure 4. Results of Average feature correlations between 10 masked language model pairs.
+</p>
+
+
+### Multi-headed attention
+Then, they investigate loss barrier of Head-Permutation multi-headed attention approach. It is note that this approach maintain head structure while allowing different head correspondences (*Head-Perm*) exhibits lower loss barrier than simple attention averaging (*Vanilla Attention Avg.*), ignoring the multiheaded structure of the weight parameters (*Ignore-Heads*), and not allowing for different head correspondences across different models (*Monotonic*) while exhibiting clear attention head boundaries of the correlation matrix (See Figure 5 and Table 1).
+
+<style>
+    .centered {text-align: center;}
+</style>
+<table style="border: 2px;" align="center">
+  <tr>
+    <td > Method </td>
+    <td class="centered"> Loss Barrier&darr; </td>
+    <td class="centered"> Std. Err. </td>
+  </tr><tr>
+    <td > Vanilla Attention Avg. </td>
+    <td class="centered"> 4.31 </td>
+    <td class="centered"> 0.21 </td>
+   </tr><tr>
+    <td > Monotonic Head Alignment </td>
+    <td class="centered"> 4.13 </td>
+    <td class="centered"> 0.20 </td>
+  </tr><tr>
+    <td > Ignore-Heads </td>
+    <td class="centered"> 3.97 </td>
+    <td class="centered"> 0.25 </td>
+  </tr><tr>
+    <td > Head-Perm </td>
+    <td class="centered"> <b>3.71 </b></td>
+    <td class="centered"> 0.23 </td>
+</table>
+<p style="text-align:center; font-style: italic;">
+Table 1. Loss Barriers of 10 MultiBERTs merged with feed-forward and attention components merged.
+</p>
+<p align="center">
+    <img src="figures/Figure5.png" width="300"> 
+</p>
+
+<p style="text-align:center; font-style: italic;">
+Figure 5. Results of a correlation matrix between the first multi-headed attention layer from two different MultiBERTs models.
+</p>
+
+### Residual Stream
+ Moreover, they investigate the effect of the permutation alignment involving residual connection parameters. As described in Residual Connections, repeated Add/Norm components sharing the permutation operations reduce the permutation symmetries and available residual stream parameters. The identity permutation which using the identity matrix {{< katex >}}{I_d}{{< /katex >}} exhibits the lowest loss barrier because only one pair of {{< katex >}}{\{P, P^T\}}{{< /katex >}} is in the residual stream. We note that the seperate permutation approach, despite it has the largest loss barrier and no valid symmetry, has largest degrees of freedom.
+<style>
+    .centered {text-align: center;}
+</style>
+<table style="border: 2px;" align="center">
+  <tr>
+    <td > Method </td>
+    <td class="centered"> Loss Barrier&darr; </td>
+    <td class="centered"> Std. Err. </td>
+  </tr><tr>
+    <td > Identity </td>
+    <td class="centered"> <b>4.95 </b></td>
+    <td class="centered"> 0.38 </td>
+   </tr><tr>
+    <td > First </td>
+    <td class="centered"> 7.58 </td>
+    <td class="centered"> 0.19 </td>
+  </tr><tr>
+    <td > Last </td>
+    <td class="centered"> 7.41 </td>
+    <td class="centered"> 0.18 </td>
+</tr><tr>
+    <td > All </td>
+    <td class="centered"> 7.34 </td>
+    <td class="centered"> 0.22 </td>
+  </tr><tr>
+    <td > Seperate </td>
+    <td class="centered"> 9.38 </td>
+    <td class="centered"> 0.49 </td>
+</table>
+
+<p style="text-align:center; font-style: italic;">
+Table 2. Loss Barriers of merged MultiBERTs with only residual components merged.
+</p>
+
+### Amount of Data
+Moreover, they investigate the effect of the amount of sentences on the loss barrier. Despite combination of feed-forward and attention layers, there is no strong directional relationship between the amount of data and the loss barrier. It seems that some variations are attributed by the quality of the data (See Figure 6). 
+<p align="center">
+    <img src="figures/Figure6.png" width="300"> 
+</p>
+
+<p style="text-align:center; font-style: italic;">
+Figure 6. Results of loss barrier respect to the amount of sentences.
+</p>
+
+
+### GLUE results
+Finally, they compare loss barriers of their method to those of vanilla averaging approach for eight different GLUE tasks including residual permutations (See Figure 7 and Table 3). Vanilla averaging (STS-B) exhibits the highest loss, but some tasks show that the vanilla averaging outperforms their approach. They observe inconsistent loss reduction, with lower loss barriers than those of the masked language modeling setting. They also observe that lower loss pattern than either parent model at about {{< katex >}}\lambda{{< /katex >}} = 0.15 and {{< katex >}}\lambda{{< /katex >}} = 0.85. Interestingly,  M-shape curve can be found for some vanilla merges between these fine-tuned models. In this perspective, their method could be extended to explore lower loss paths between finely-tuned minima. However, it remains selection of optimal data for the lowest loss, understanding of fine-tuned models and pre-connectivity in the loss landscape is required as further work.
+<p align="center">
+    <img src="figures/Figure7.png" width="300"> 
+</p>
+
+<p style="text-align:center; font-style: italic;">
+Figure 7. Loss barrier curves for 8 Glue tasks for vanilla interpolation and our strategy.
+</p>
+<table style="border: 2px;" align="center">  <tr>
+    <td>    </td>
+    <td colspan="2"> Vanilla averaging </td>
+    <td colspan="2"> Ours </td>
+  </tr><tr>
+    <td >  </td>
+    <td > Barrier </td>
+    <td > Error </td>
+    <td > Barrier </td>
+    <td > Error </td>
+  </tr><tr>
+    <td > MNLI-mm </td>
+    <td > <b>0.61 </b></td>
+    <td > 0.03 </td>
+    <td > 0.72 </td>
+    <td > 0.08 </td>
+   </tr><tr>
+    <td > QQP </td>
+    <td > 1.37 </td>
+    <td > 0.09 </td>
+    <td ><b> 1.20</b> </td>
+    <td > 0.11 </td>
+  </tr><tr>
+    <td > QNLI </td>
+    <td > <b>0.64</b> </td>
+    <td > 0.04 </td>
+    <td > 0.77 </td>
+    <td > 0.06 </td>    
+  </tr><tr>
+    <td > SST-2 </td>
+    <td > 0.42 </td>
+    <td > 0.04 </td>
+    <td > <b>0.36</b> </td>
+    <td > 0.07 </td>    
+  </tr><tr>
+    <td > CoLA </td>
+    <td > 1.31 </td>
+    <td > 0.14 </td>
+    <td > <b>1.11</b> </td>
+    <td > 0.13 </td>    
+  </tr><tr>
+    <td > STS-B </td>
+    <td > 5.15 </td>
+    <td > 0.44 </td>
+    <td > <b>4.24</b> </td>
+    <td > 0.35 </td>   
+  </tr><tr>
+    <td > MRPC </td>
+    <td > 2.74 </td>
+    <td > 0.08 </td>
+    <td > <b>1.93</b> </td>
+    <td > 0.11 </td>   
+  </tr><tr>
+    <td > RTE </td>
+    <td > 0.53 </td>
+    <td > 0.04 </td>
+    <td > <b>0.41</b> </td>
+    <td > 0.05 </td> 
+</table>
+
+<p style="text-align:center; font-style: italic;">
+Table 3. Comparison of loss bariers between fine-tuned BERT model across 8 Glue tasks for vanilla interpolation and our strategy.
+</p>
+
+
 
 ## Conclusion
+
+In this work, they develop a new strategy for model mergring based on permutation mapping and demonstrates reduced loss barriers between masked languaged models with different initialziation compared to vanilla merging. Then, they extend their approach to fine-tuned models. They suggest that understanding the connectedness between models lead to achieving sharpness of minima and smoothness Transformer loss space. Moreover, it can open up new possibilities for improving design optimization methods, ensembles of models, and additional merging techniques. Specifically, this paper shows that permutation invariances of Transformer model is considered to characterize the geometric features of minima. Finally, they shad the light on the relationships between fine-tuned models, Transformer width and loss barriers, and the data for characterize the relationship between Transformer minima.
+
+
+
+## References
+https://arxiv.org/abs/2403.00986
 
 ## References
 https://arxiv.org/abs/2403.00986
