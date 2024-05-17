@@ -55,12 +55,12 @@ cf. The above problem is solved using the Jonker-Volgenant algorithm.
 Next, the permutation mapping {{< katex >}}\pi{{< /katex >}} is converted to a permutation matrix {{< katex >}}\text{P}{{< /katex >}}. The matrix is then multiplied to the original weight matrix of {{< katex >}}B{{< /katex >}} denoted as {{< katex >}}\text{W}_l^B \subset \theta_B{{< /katex >}}. Then the permuted weight matrix {{< katex >}}\text{P}\text{W}_l^B{{< /katex >}} closely resembles the weight {{< katex >}}A{{< /katex >}}, denoted as {{< katex >}}\text{W}_l^A \subset \theta_A{{< /katex >}}. Denoting the modified model parameters as {{< katex >}}\theta_B'{{< /katex >}}, the final merged model is computed as {{< katex >}}\lambda\theta_A+(1-\lambda)\theta_B{{< /katex >}} for some {{< katex >}}\lambda\in[0,1]{{< /katex >}}.
 cf. If permutation matrix {{< katex >}}\text{P}{{< /katex >}} is multiplied in layer {{< katex >}}l{{< /katex >}}, then {{< katex >}}\text{P}^{\text{T}}=\text{P}^{-1}{{< /katex >}} is applied in the next layer to unpermute the ordering, i.e.,
 
-<p>{{< katex display=true >}}
+{{< katex display=true >}}
 \text{W}_{l+1}^{B'} \leftarrow \text{W}_{l+1}^{B}\text{P}^{\text{T}}.
-{{< /katex >}}</p>
+{{< /katex >}}
 
 ### Multi-head Attentions
-<p>Multi-head attention parameters include parameters from key, query, value, and linear layer each denoted as {{< katex >}}\text{W}_K{{< /katex >}}, {{< katex >}}\text{W}_Q{{< /katex >}}, {{< katex >}}\text{W}_V{{< /katex >}}, and {{< katex >}}\text{W}_O{{< /katex >}}. For each key, query, and value weights, the whole parameter {{< katex >}}\text{W} \in \mathbb{R}^{d_{\text{model}} \times d_{\text{model}}}{{< /katex >}} is partitioned into {{< katex >}}H{{< /katex >}} attention heads each of output dimension {{< katex >}}d_k = d_{\text{model}}/H{{< /katex >}}. Permutation should be operated on each attention head separately, in order to apply a permutation to full weight matrices and maintain the functional equivalence of the overall model. This is because the final hidden vector from MHA reflects a concatenation of the result from each head, which are computed separately with weights {{< katex >}}\text{W}_{K_i} ,\text{W}_{Q_i} , \text{W}_{V_i}{{< /katex >}} for head {{< katex >}}i{{< /katex >}}. In the paper's case, since the models are trained from different initializations, the correspondence of their attention heads may differ in addition to the correspondence of features within each head. The features are extracted just after the attention computation and before the linear layer. The features are used to compute {{< katex >}}C{{< /katex >}}, and then the correlation matrix is partitioned by heads into {{< katex >}}d_k \times d_k{{< /katex >}} correlation matrices, for each potential attention head pair. Next, optimal permutation for each unique head pair {{< katex >}}(j, k){{< /katex >}} is computed. Each head's internal permutation is computed and stored, and the cost is computed as</p>
+Multi-head attention parameters include parameters from key, query, value, and linear layer each denoted as {{< katex >}}\text{W}_K{{< /katex >}}, {{< katex >}}\text{W}_Q{{< /katex >}}, {{< katex >}}\text{W}_V{{< /katex >}}, and {{< katex >}}\text{W}_O{{< /katex >}}. For each key, query, and value weights, the whole parameter {{< katex >}}\text{W} \in \mathbb{R}^{d_{\text{model}} \times d_{\text{model}}}{{< /katex >}} is partitioned into {{< katex >}}H{{< /katex >}} attention heads each of output dimension {{< katex >}}d_k = d_{\text{model}}/H{{< /katex >}}. Permutation should be operated on each attention head separately, in order to apply a permutation to full weight matrices and maintain the functional equivalence of the overall model. This is because the final hidden vector from MHA reflects a concatenation of the result from each head, which are computed separately with weights {{< katex >}}\text{W}_{K_i} ,\text{W}_{Q_i} , \text{W}_{V_i}{{< /katex >}} for head {{< katex >}}i{{< /katex >}}. In the paper's case, since the models are trained from different initializations, the correspondence of their attention heads may differ in addition to the correspondence of features within each head. The features are extracted just after the attention computation and before the linear layer. The features are used to compute {{< katex >}}C{{< /katex >}}, and then the correlation matrix is partitioned by heads into {{< katex >}}d_k \times d_k{{< /katex >}} correlation matrices, for each potential attention head pair. Next, optimal permutation for each unique head pair {{< katex >}}(j, k){{< /katex >}} is computed. Each head's internal permutation is computed and stored, and the cost is computed as
 
 {{< katex display=true >}}
 \text{cost}(j,k)=\max_\pi \sum_{i=1}^{d_k} C_{jk}(i,\pi(i)),
@@ -76,7 +76,7 @@ where {{< katex >}}C_{jk}{{< /katex >}} refers to the specific partition of the 
     <img src=figures/algorithm1.png width="400">
 </p>
 
-The algorithm outputs a permuting matrix {{< katex >}}\text{P}_{\text{MHA}}{{< /katex >}}, which is applied to each of {{< katex >}}\text{W}_V{{< /katex >}}, {{< katex >}}\text{W}_K{{< /katex >}} and {{< katex >}}\text{W}_Q{{< /katex >}}.
+The algorithm returns a permuting matrix {{< katex >}}\text{P}_{\text{MHA}}{{< /katex >}}, which is applied to each of {{< katex >}}\text{W}_V{{< /katex >}}, {{< katex >}}\text{W}_K{{< /katex >}} and {{< katex >}}\text{W}_Q{{< /katex >}}.
 
 #### Residual Connections
 Each transformer layer comes with two residual connections, as can be seen from FIgure 1. The residual connections can be formulated as follows:
@@ -101,41 +101,45 @@ The input and output of both sublayers are added to create a new output. This im
 Since the input to each layer must be permuted ({{< katex >}}\text{P}x{{< /katex >}}), and the output of each layer is also permuted ({{< katex >}}\text{P}x_f^r{{< /katex >}}), the entire transformer architecture uses the same {{< katex >}}\{\text{P}, \text{P}^{\text{T}}\}{{< /katex >}} matrices for all weights involved in residual connections.
 
 ## Models, Tasks, Datasets and Evaluation settings
-In this work, they investigate 5 different BERT models from the MultiBERTs reproductions seeds 1 through 5 (See ['BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding'](https://aclanthology.org/N19-1423/) & ['The MultiBERTs: BERT Reproductions for Robustness Analysis'](https://arxiv.org/abs/2106.16163)).
+In this work, the authors investigated 5 different BERT models from the MultiBERTs reproductions seeds 1 through 5 (See ['BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding'](https://aclanthology.org/N19-1423/) & ['The MultiBERTs: BERT Reproductions for Robustness Analysis'](https://arxiv.org/abs/2106.16163)).
 Each model has the following properties:
   1. Bert-base-uncased checkpoint.
   2. Different random initialization and random ordering.
   3. Same original BERT vocabulary and tokenizer.
-To test base method, they use the masked language modeling task employing the validation set of the [Wikitext-103 benchmark](https://arxiv.org/abs/1609.07843) as evaluation data. Then, they extract over one million sentenses from the [Books corpus](https://www.cv-foundation.org/openaccess/content_iccv_2015/html/Zhu_Aligning_Books_and_ICCV_2015_paper.html).
-In classification tasks, they employ fine-tuned models with a randomly initialized classification head with pooling layer and classification layer weights. They keep the head initializations the same across models. They use the General Language Understanding Evaluation ([GLUE](https://arxiv.org/abs/1804.07461)) benchmark excluding [WNLI](https://arxiv.org/abs/1810.04805).
+
+To test the baseline method, they used the masked language modeling task while employing the validation set of the [Wikitext-103 benchmark](https://arxiv.org/abs/1609.07843) as the evaluation data. Next, they extracted over one million sentences from the [Books corpus](https://www.cv-foundation.org/openaccess/content_iccv_2015/html/Zhu_Aligning_Books_and_ICCV_2015_paper.html).
+In classification tasks, they employed fine-tuned models with randomly initialized classification head with pooling layer and classification layer weights. The authors kept the head initializations the same across the models. They used the General Language Understanding Evaluation ([GLUE](https://arxiv.org/abs/1804.07461)) benchmark excluding [WNLI](https://arxiv.org/abs/1810.04805).
 As a baseline for comparison, vanilla averaging is defined as:
+
 {{< katex display=true >}}
 \theta_{avg} = \frac{1}{2}(\theta_A+\theta_B)
 {{< /katex >}}
 
-
-In this work, they define some Evaluation definitions. They define loss-barriers as (['M. The lottery ticket hypothesis: Finding sparse, trainable neural networks. In International Conference on Learning Representations'](https://arxiv.org/abs/1803.03635)):
+In this work, they defined new evaluation definitions. They defined loss-barriers as (['M. The lottery ticket hypothesis: Finding sparse, trainable neural networks. In International Conference on Learning Representations'](https://arxiv.org/abs/1803.03635)):
 {{< katex display=true >}}
 \max_{\lambda} \mathcal{L}(\lambda\theta_A + (1 - \lambda)\theta_B) - \frac{1}{2}(\mathcal{L}(\theta_A) + \mathcal{L}(\theta_B))
 {{< /katex >}}
 
-A masking probability of *p* = 0.15 across block sizes of 128 tokens use to compute MLM loss\pseudo-perplexity. For *N* masked samples in the text **W**, pseudo-perplexity defined as:
+A masking probability of {{< katex >}}p = 0.15{{< /katex >}} across block sizes of 128 tokens were used to compute MLM loss\pseudo-perplexity. For {{< katex >}}N{{< /katex >}} masked samples in the text **W**, pseudo-perplexity is defined as:
+
 {{< katex display=true >}}
 \mathrm{Pseudo-PPL}(\textbf{W};\theta) = 2^{-\frac{1}{N} \sum_{i=1}^{N}\log_{2}\,p_\theta(\omega_i|\textbf{W}_{\backslash{i}})}
 {{< /katex >}}
 
 ## Results
 ### By component
-Firstly, they found that the merging all feed-forward sublayers and/or merging all multi-headed attention sublayers reducing the pseudo-perplexity compared to the baseline. Remakably, combination of them leads to reduce the perplexity about 7 times at λ = 0.5 (See Figure 3). The reduced barrier suggests that a lower loss path has formed among these models, indicating a connection between the minima with a barrier similar to what they report.
+First, they found that the merging all feed-forward sublayers and/or merging all multi-headed attention sublayers reducing the pseudo-perplexity compared to the baseline. Remakably, combination of them leads to reduce the perplexity about 7 times at λ = 0.5 (See Figure 3). The reduced barrier suggests that a lower loss path has formed among these models, indicating a connection between the minima with a barrier similar to what they report.
+
 <p align="center">
     <img src="figures/Figure3.png" width="300"> 
 </p>
+
 <p style="text-align:center; font-style: italic;">
 Figure 3. Results of pseudo-perplexity scores of 10 MultiBERTs with vanilla averaging, merging all feed-forward sublayers, and merging all multi-headed attention sublayers and all multi-headed attention sublayers.
 </p>
 
+Next, they investigated how well these Transformers learn similar representations of the model, they compute the average feature correlations both of the Feed-Forward layer and attention pre-merged/merged with our method. The aligned models show higher average feature correlations than the orignal models. However, it is note that these values are no more than 0.3 because some pre-trained transformers can be sparsely activated and be pruned heavily leading to lower average feature correlations (Li et al.,2023; Dalvi et al., 2020).
 
-Next, they investigate how well these Transformers learn similar representations of the model, they compute the average feature correlations both of the Feed-Forward layer and attention pre-merged/merged with our method. The aligned models show higher average feature correlations than the orignal models. However, It is note that these values are no more than 0.3 because some pre-trained transformers can be sparsely activated and be pruned heavily leading to lower average feature correlations (Li et al.,2023; Dalvi et al., 2020).
 <p align="center">
     <img src="figures/Figure4.png" width="300"> 
 </p>
@@ -146,7 +150,7 @@ Figure 4. Results of Average feature correlations between 10 masked language mod
 
 
 ### Multi-headed attention
-Then, they investigate loss barrier of Head-Permutation multi-headed attention approach. It is note that this approach maintain head structure while allowing different head correspondences (*Head-Perm*) exhibits lower loss barrier than simple attention averaging (*Vanilla Attention Avg.*), ignoring the multiheaded structure of the weight parameters (*Ignore-Heads*), and not allowing for different head correspondences across different models (*Monotonic*) while exhibiting clear attention head boundaries of the correlation matrix (See Figure 5 and Table 1).
+Then, they investigated loss barrier of Head-Permutation multi-headed attention approach. It is worth noting that this approach maintains head structure while allowing different head correspondences (*Head-Perm*). The proposed method exhibits lower loss barrier than method using simple attention averaging (*Vanilla Attention Avg.*), method that ignores the multiheaded structure of the weight parameters (*Ignore-Heads*), and method that does not allow for different head correspondences across different models (*Monotonic*) while exhibiting clear attention head boundaries of the correlation matrix (See Figure 5 and Table 1).
 
 <style>
     .centered {text-align: center;}
@@ -185,7 +189,7 @@ Figure 5. Results of a correlation matrix between the first multi-headed attenti
 </p>
 
 ### Residual Stream
- Moreover, they investigate the effect of the permutation alignment involving residual connection parameters. As described in Residual Connections, repeated Add/Norm components sharing the permutation operations reduce the permutation symmetries and available residual stream parameters. The identity permutation which using the identity matrix {{< katex >}}{I_d}{{< /katex >}} exhibits the lowest loss barrier because only one pair of {{< katex >}}{\{P, P^T\}}{{< /katex >}} is in the residual stream. We note that the seperate permutation approach, despite it has the largest loss barrier and no valid symmetry, has largest degrees of freedom.
+ Moreover, they investigate the effect of the permutation alignment involving residual connection parameters. As described in Residual Connections, repeated Add/Norm components sharing the permutation operations reduce the permutation symmetries and available residual stream parameters. The identity permutation which uses the identity matrix {{< katex >}}{I_d}{{< /katex >}} exhibits the lowest loss barrier because only one pair of {{< katex >}}{\{P, P^T\}}{{< /katex >}} is in the residual stream. We note that the seperate permutation approach, despite it having the largest loss barrier and no valid symmetry, has largest degrees of freedom.
 <style>
     .centered {text-align: center;}
 </style>
@@ -232,13 +236,13 @@ Figure 6. Results of loss barrier respect to the amount of sentences.
 
 
 ### GLUE results
-Finally, they compare loss barriers of their method to those of vanilla averaging approach for eight different GLUE tasks including residual permutations (See Figure 7 and Table 3). Vanilla averaging (STS-B) exhibits the highest loss, but some tasks show that the vanilla averaging outperforms their approach. They observe inconsistent loss reduction, with lower loss barriers than those of the masked language modeling setting. They also observe that lower loss pattern than either parent model at about {{< katex >}}\lambda{{< /katex >}} = 0.15 and {{< katex >}}\lambda{{< /katex >}} = 0.85. Interestingly,  M-shape curve can be found for some vanilla merges between these fine-tuned models. In this perspective, their method could be extended to explore lower loss paths between finely-tuned minima. However, it remains selection of optimal data for the lowest loss, understanding of fine-tuned models and pre-connectivity in the loss landscape is required as further work.
+Finally, they compared the loss barriers of their method to those of vanilla averaging approach for eight different GLUE tasks including residual permutations (See Figure 7 and Table 3). Vanilla averaging (STS-B) exhibits the highest loss, but some tasks show that the vanilla averaging outperforms their approach. They observe inconsistent loss reduction, with lower loss barriers than those of the masked language modeling setting. They also observe that lower loss pattern than either parent model at about {{< katex >}}\lambda = 0.15{{< /katex >}} and {{< katex >}}\lambda = 0.85{{< /katex >}}. Interestingly,  M-shaped curve can be found in some vanilla merges between these fine-tuned models. In this perspective, their method could be extended to explore lower loss paths between finely-tuned minima. However, the selection of optimal data for the lowest loss, understanding of fine-tuned models and pre-connectivity in the loss landscape are remained for future work.
 <p align="center">
     <img src="figures/Figure7.png" width="300"> 
 </p>
 
 <p style="text-align:center; font-style: italic;">
-Figure 7. Loss barrier curves for 8 Glue tasks for vanilla interpolation and our strategy.
+Figure 7. Loss barrier curves for 8 GLUE tasks for vanilla interpolation and our strategy.
 </p>
 <table style="border: 2px;" align="center">  <tr>
     <td>    </td>
@@ -301,14 +305,14 @@ Figure 7. Loss barrier curves for 8 Glue tasks for vanilla interpolation and our
 </table>
 
 <p style="text-align:center; font-style: italic;">
-Table 3. Comparison of loss bariers between fine-tuned BERT model across 8 Glue tasks for vanilla interpolation and our strategy.
+Table 3. Comparison of loss bariers between fine-tuned BERT model across 8 GLUE tasks for vanilla interpolation and our strategy.
 </p>
 
 
 
 ## Conclusion
 
-In this work, they develop a new strategy for model mergring based on permutation mapping and demonstrates reduced loss barriers between masked languaged models with different initialziation compared to vanilla merging. Then, they extend their approach to fine-tuned models. They suggest that understanding the connectedness between models lead to achieving sharpness of minima and smoothness Transformer loss space. Moreover, it can open up new possibilities for improving design optimization methods, ensembles of models, and additional merging techniques. Specifically, this paper shows that permutation invariances of Transformer model is considered to characterize the geometric features of minima. Finally, they shad the light on the relationships between fine-tuned models, Transformer width and loss barriers, and the data for characterize the relationship between Transformer minima.
+In this work, the authors develop a new strategy for model mergring based on permutation mapping and demonstrates reduced loss barriers between masked languaged models with different initialziation compared to vanilla merging. Next, they extend their approach to fine-tuned models. The authors suggest that understanding the connectedness between models lead to achieving sharpness of minima and smoothness Transformer loss space. Moreover, it can open up new possibilities for improving design optimization methods, ensembles of models, and additional merging techniques. Specifically, this paper shows that permutation invariances of Transformer model is considered to characterize the geometric features of minima. Finally, they shad the light on the relationships between fine-tuned models, Transformer width and loss barriers, and the data for characterize the relationship between Transformer minima.
 
 
 ## References
