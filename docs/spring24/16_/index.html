@@ -3,13 +3,19 @@
 <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content=" # ">
+<meta name="description" content="Mixture-of-Depths: Dynamically allocating compute in transformer-based language models # Authors: Dativd Raposo(Google DeepMind) and Adam Santoro(Google DeepMind) et.al
+This paper insists that all problems do not require same amount of time to solve in real world and also in language models like Transformer.
+But, Transformer models spread FLOPs &lsquo;uniformly&rsquo; across input sequences, which is inefficient!
+Therefore there are many efforts like &ldquo;early exiting&rdquo; to reduce total FLOPs &amp; &lsquo;dynamically&rsquo; allocate compute budgets.">
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
 <meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/docs/spring24/16_/">
   <meta property="og:site_name" content="Efficient ML Systems">
   <meta property="og:title" content="Efficient ML Systems">
-  <meta property="og:description" content=" # ">
+  <meta property="og:description" content="Mixture-of-Depths: Dynamically allocating compute in transformer-based language models # Authors: Dativd Raposo(Google DeepMind) and Adam Santoro(Google DeepMind) et.al
+This paper insists that all problems do not require same amount of time to solve in real world and also in language models like Transformer.
+But, Transformer models spread FLOPs ‘uniformly’ across input sequences, which is inefficient!
+Therefore there are many efforts like “early exiting” to reduce total FLOPs &amp; ‘dynamically’ allocate compute budgets.">
   <meta property="og:locale" content="en-us">
   <meta property="og:type" content="website">
 <title>16 | Efficient ML Systems</title>
@@ -18,7 +24,7 @@
 <link rel="canonical" href="http://localhost:1313/docs/spring24/16_/">
 <link rel="stylesheet" href="/book.min.309b7ed028807cdb68d8d61e26d609f48369c098dbf5e4d8c0dcf4cdf49feafc.css" integrity="sha256-MJt&#43;0CiAfNto2NYeJtYJ9INpwJjb9eTYwNz0zfSf6vw=" crossorigin="anonymous">
   <script defer src="/flexsearch.min.js"></script>
-  <script defer src="/en.search.min.bf67d519c9158c61e61aa2159f96e680798e99030f3689e965832ab445329f11.js" integrity="sha256-v2fVGckVjGHmGqIVn5bmgHmOmQMPNonpZYMqtEUynxE=" crossorigin="anonymous"></script>
+  <script defer src="/en.search.min.9faf5ba385befef54c83a4d8245bd6362a6c20d765f21bfeb434a81acec8a150.js" integrity="sha256-n69bo4W&#43;/vVMg6TYJFvWNipsINdl8hv&#43;tDSoGs7IoVA=" crossorigin="anonymous"></script>
 
   
 
@@ -606,7 +612,22 @@ https://github.com/alex-shpak/hugo-book
   <aside class="hidden clearfix">
     
   
-<nav id="TableOfContents"></nav>
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#background">Background</a>
+      <ul>
+        <li></li>
+      </ul>
+    </li>
+    <li><a href="#implementing-mixture-of-depth-transformers">Implementing Mixture-of-Depth Transformers</a>
+      <ul>
+        <li></li>
+      </ul>
+    </li>
+    <li><a href="#results--discussion">Results &amp; Discussion</a></li>
+    <li><a href="#references">References</a></li>
+  </ul>
+</nav>
 
 
 
@@ -617,10 +638,47 @@ https://github.com/alex-shpak/hugo-book
 
       
       
-  <article class="markdown book-article"><h1 id="heading">
+  <article class="markdown book-article"><h1 id="mixture-of-depths-dynamically-allocating-compute-in-transformer-based-language-models">
+  Mixture-of-Depths: Dynamically allocating compute in transformer-based language models
+  <a class="anchor" href="#mixture-of-depths-dynamically-allocating-compute-in-transformer-based-language-models">#</a>
+</h1>
+<p><em>Authors: Dativd Raposo(Google DeepMind) and Adam Santoro(Google DeepMind) et.al</em></p>
+<p>This paper insists that all problems do not require same amount of time to solve in real world and also in language models like Transformer.<br>
+But, Transformer models spread FLOPs <strong>&lsquo;uniformly&rsquo;</strong> across input sequences, which is inefficient!<br>
+Therefore there are many efforts like &ldquo;early exiting&rdquo; to reduce total FLOPs &amp; <strong>&lsquo;dynamically&rsquo;</strong> allocate compute budgets.
+However, these methods do not work well due to hardware constraints.<br>
+So, the methods should be sophistically addressed like harmonious with current hardware stack &amp; known tensor sizes that are selected to maximize hardware utilization.</p>
+<p>Therefore, the things that authors of this paper contributed in this paper are listed as follows:</p>
+<ol>
+<li>Suggestion of method(Mixture-of-Depths, MoD) which limits the total FLOPs by choosing only k tokens which process into Attention + mlp layer.</li>
+<li>Comparing this method with Vanilla transformer(isoFLOP)</li>
+<li>Comparing this method with Mixture-of-Experts(MoE) and Combine to MoDE</li>
+</ol>
+<h2 id="background">
+  Background
+  <a class="anchor" href="#background">#</a>
+</h2>
+<h4 id="what-is-moe">
+  What is MoE?
+  <a class="anchor" href="#what-is-moe">#</a>
+</h4>
+<p>MoE</p>
+<h2 id="implementing-mixture-of-depth-transformers">
+  Implementing Mixture-of-Depth Transformers
+  <a class="anchor" href="#implementing-mixture-of-depth-transformers">#</a>
+</h2>
+<h4 id="heading">
   
   <a class="anchor" href="#heading">#</a>
-</h1>
+</h4>
+<h2 id="results--discussion">
+  Results &amp; Discussion
+  <a class="anchor" href="#results--discussion">#</a>
+</h2>
+<h2 id="references">
+  References
+  <a class="anchor" href="#references">#</a>
+</h2>
 </article>
  
       
@@ -630,9 +688,9 @@ https://github.com/alex-shpak/hugo-book
   <div class="flex flex-wrap justify-between">
 
 
-  <div><a class="flex align-center" href="https://github.com/effml-postech/blog-post/commit/0947bc5271fafa666a5b1d8cea6a555fa66e3cb5" title='Last modified by effml-postech | May 14, 2024' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/effml-postech/blog-post/commit/8de915e7da8d1050f3e4e13e48d676b678baccfc" title='Last modified by Minjae Park | May 18, 2024' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="" />
-      <span>May 14, 2024</span>
+      <span>May 18, 2024</span>
     </a>
   </div>
 
@@ -673,7 +731,22 @@ https://github.com/alex-shpak/hugo-book
       <div class="book-toc-content">
         
   
-<nav id="TableOfContents"></nav>
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#background">Background</a>
+      <ul>
+        <li></li>
+      </ul>
+    </li>
+    <li><a href="#implementing-mixture-of-depth-transformers">Implementing Mixture-of-Depth Transformers</a>
+      <ul>
+        <li></li>
+      </ul>
+    </li>
+    <li><a href="#results--discussion">Results &amp; Discussion</a></li>
+    <li><a href="#references">References</a></li>
+  </ul>
+</nav>
 
 
  

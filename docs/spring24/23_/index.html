@@ -3,15 +3,15 @@
 <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Beyond Language Models: Byte Models are Digital World Simulators # Byte models expand traditional language models to the byte level, starting from the premise that all digital data and operations are fundamentally byte-based. These models process data from various modalities such as text, audio, and images uniformly as bytes, increasing their applicability in a wide digital environment.
-In this paper, bGPT is introduced. bGPT is designed to model digital data at the byte level and is optimized to effectively process byte sequences.">
+<meta name="description" content="Beyond Language Models: Byte Models are Digital World Simulators # Authors: Shangda Wu, Xu Tan, Zili Wang, Rui Wang, Xiaobing Li, Maosong Sun
+Byte models expand traditional language models to the byte level, starting from the premise that all digital data and operations are fundamentally byte-based. These models process data from various modalities such as text, audio, and images uniformly as bytes, increasing their applicability in a wide digital environment.">
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
 <meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/docs/spring24/23_/">
   <meta property="og:site_name" content="Efficient ML Systems">
   <meta property="og:title" content="Efficient ML Systems">
-  <meta property="og:description" content="Beyond Language Models: Byte Models are Digital World Simulators # Byte models expand traditional language models to the byte level, starting from the premise that all digital data and operations are fundamentally byte-based. These models process data from various modalities such as text, audio, and images uniformly as bytes, increasing their applicability in a wide digital environment.
-In this paper, bGPT is introduced. bGPT is designed to model digital data at the byte level and is optimized to effectively process byte sequences.">
+  <meta property="og:description" content="Beyond Language Models: Byte Models are Digital World Simulators # Authors: Shangda Wu, Xu Tan, Zili Wang, Rui Wang, Xiaobing Li, Maosong Sun
+Byte models expand traditional language models to the byte level, starting from the premise that all digital data and operations are fundamentally byte-based. These models process data from various modalities such as text, audio, and images uniformly as bytes, increasing their applicability in a wide digital environment.">
   <meta property="og:locale" content="en-us">
   <meta property="og:type" content="website">
 <title>23 | Efficient ML Systems</title>
@@ -20,7 +20,7 @@ In this paper, bGPT is introduced. bGPT is designed to model digital data at the
 <link rel="canonical" href="http://localhost:1313/docs/spring24/23_/">
 <link rel="stylesheet" href="/book.min.309b7ed028807cdb68d8d61e26d609f48369c098dbf5e4d8c0dcf4cdf49feafc.css" integrity="sha256-MJt&#43;0CiAfNto2NYeJtYJ9INpwJjb9eTYwNz0zfSf6vw=" crossorigin="anonymous">
   <script defer src="/flexsearch.min.js"></script>
-  <script defer src="/en.search.min.bf67d519c9158c61e61aa2159f96e680798e99030f3689e965832ab445329f11.js" integrity="sha256-v2fVGckVjGHmGqIVn5bmgHmOmQMPNonpZYMqtEUynxE=" crossorigin="anonymous"></script>
+  <script defer src="/en.search.min.9faf5ba385befef54c83a4d8245bd6362a6c20d765f21bfeb434a81acec8a150.js" integrity="sha256-n69bo4W&#43;/vVMg6TYJFvWNipsINdl8hv&#43;tDSoGs7IoVA=" crossorigin="anonymous"></script>
 
   
 
@@ -615,7 +615,7 @@ https://github.com/alex-shpak/hugo-book
         <li><a href="#exploring-bgpt"><strong>Exploring bGPT</strong></a></li>
         <li><a href="#applications">Applications</a></li>
         <li><a href="#experiment">Experiment</a></li>
-        <li><a href="#conclusion-and-future-work">Conclusion and Future Work</a></li>
+        <li><a href="#conclusion-and-future-work"><strong>Conclusion and Future Work</strong></a></li>
       </ul>
     </li>
   </ul>
@@ -634,6 +634,7 @@ https://github.com/alex-shpak/hugo-book
   <strong>Beyond Language Models: Byte Models are Digital World Simulators</strong>
   <a class="anchor" href="#beyond-language-models-byte-models-are-digital-world-simulators">#</a>
 </h1>
+<p><em>Authors: Shangda Wu, Xu Tan, Zili Wang, Rui Wang, Xiaobing Li, Maosong Sun</em></p>
 <p>Byte models expand traditional language models to the byte level, starting from the premise that all digital data and operations are fundamentally byte-based. These models process data from various modalities such as text, audio, and images uniformly as bytes, increasing their applicability in a wide digital environment.</p>
 <p>In this paper, bGPT is introduced. bGPT is designed to model digital data at the byte level and is optimized to effectively process byte sequences. It has demonstrated performance comparable to specialized models across various modalities, including text, audio, and images, and offers new possibilities for predicting, simulating, and diagnosing hardware operations. Designed to predict and understand bytes, bGPT provides a deeper understanding of and interaction with digital systems.</p>
 <p align="center">
@@ -645,71 +646,86 @@ The bGPT framework simulates digital systems using native binary data. It integr
   <strong>Exploring bGPT</strong>
   <a class="anchor" href="#exploring-bgpt">#</a>
 </h3>
-<p><em><strong>Architecture</strong></em>
-Learning patterns in digital systems at the byte level provides a unified approach to integrating various data types, but the high resolution of bytes results in long sequences that significantly increase computational costs. This issue is especially pronounced in transformer-based models, limiting the efficiency and scalability of processing binary data.
+<p><em><strong>Architecture</strong></em></p>
+<p>Learning patterns in digital systems at the byte level provides a unified approach to integrating various data types, but the high resolution of bytes results in long sequences that significantly increase computational costs. This issue is especially pronounced in transformer-based models, limiting the efficiency and scalability of processing binary data.
 bGPT is equipped with a hierarchical structure designed to efficiently handle entire byte sequences. This structure segments a sequence of byte
 
 <link rel="stylesheet" href="/katex/katex.min.css" />
 <script defer src="/katex/katex.min.js"></script>
 <script defer src="/katex/auto-render.min.js" onload="renderMathInElement(document.body);"></script><span>
-  \[B = \{b_1, b_2, \ldots, b_T\}\]
+  \(B = \{b_1, b_2, \ldots, b_T\}\)
 </span>
  of length <span>
   \(T\)
 </span>
  into a sequence of patches <span>
-  \({P}\)
+  \(\mathcal{P}\)
 </span>
 , where each patch contains exactly <span>
   \(S\)
 </span>
  bytes:
 <span>
-  \({P} = [P_1, P_2, \ldots, P_N]\)
+  \(\mathcal{P} = [P_1, P_2, \ldots, P_N]\)
 </span>
  where <span>
-  \[( N = \left\lceil \frac{T}{S} \right\rceil \)\]
+  \(N = \left\lceil \frac{T}{S} \right\rceil\)
 </span>
- is the number of patches,
-<span>
-  \[P_i = [b_{(i-1)S&#43;1}, \ldots, b_iS]\]
+ is the number of patches,</p>
+<p><span>
+  \(P_i = [b_{(i-1)S&#43;1}, \ldots, b_{(i)S}]\)
 </span>
  for <span>
-  \[\( 1 \leq i \leq N \)\]
+  \(( 1 \leq i \leq N)\)
 </span>
 , <span>
-  \[\[ P_N = [b_{(N-1)S&#43;1}, \ldots, b_T, e, \ldots, e] \]\]
+  \(P_N = [b_{(N-1)S&#43;1}, \ldots, b_T, \underbrace{e, \ldots, e}_{S - (T \mod S)}]\)
 </span>
  where <span>
-  \[}\( e \\]
+  \(e\)
 </span>
  represents the <code>&lt;eop&gt;</code> (end-of-patch).</p>
 <p><em><strong>Components</strong></em></p>
+<p align="center">
+    <img src=architecture.JPG width="600"> 
+</p>
 <ul>
 <li><strong>Linear Projection Layer</strong>: Each byte patch is mapped to a high-dimensional feature space through a linear projection layer. During this process, each byte is encoded into a 257-dimensional vector, which includes the 256 possible byte values and a special <code>&lt;eop&gt;</code> (end-of-patch) token.</li>
 <li><strong>Patch-Level Decoder</strong>: The embedded patches are processed by a patch-level decoder. This decoder plays a role in predicting the features of the next patch from the embedding of each patch, thereby learning the structural patterns of the entire dataset.</li>
 <li><strong>Byte-Level Decoder</strong>: Based on the predicted patch features, the byte sequence within each patch is reconstructed. The byte-level decoder uses the features of each patch to predict the next byte within that patch, processing the detailed information of the entire byte sequence.</li>
 </ul>
 <p><em><strong>Model Training</strong></em></p>
-<p><strong>1. Generative Modeling</strong>
-This approach requires the model to predict the next byte in a given byte sequence. The model takes the byte sequence ( B = {b_1, b_2, \ldots, b_T} ) as input and utilizes all previous byte information to predict the next byte ( b_{i+1} ) at each position.</p>
+<p><strong>1. Generative Modeling</strong></p>
+<p>This approach requires the model to predict the next byte in a given byte sequence. The model takes the byte sequence <span>
+  \(B = \{b_1, b_2, \ldots, b_T\}\)
+</span>
+  as input and utilizes all previous byte information to predict the next byte <span>
+  \(b_{i&#43;1}\)
+</span>
+ at each position.</p>
 <p>As a loss function, the negative log likelihood of the next byte at each step is minimized. This encourages the model to maximize the likelihood of the actual occurrence of the next byte.
-[ L_{\text{GEN}}(\theta) = -\sum_{i=1}^{T-1} \log p(b_{i+1} \mid b_1, b_2, \ldots, b_i; \theta) ]</p>
+<span>
+  \(\mathcal{L}_{\text{GEN}}(\theta) = - \sum_{i=1}^{T-1} \log p(b_{i&#43;1} \mid b_1, b_2, \ldots, b_i; \theta)\)
+</span>
+</p>
 <p><strong>2. Classification</strong></p>
 <p>Based on the knowledge acquired through generative modeling, bGPT can also be applied to classification tasks for labeled datasets. In this process, the model takes a byte sequence as input and predicts the category to which that sequence belongs.
 For classification tasks, the loss function used is the cross-entropy loss, which ensures that the model accurately outputs the prediction probabilities for each category.</p>
-<p>[ L_{\text{CLF}}(\theta) = -\sum_{k=1}^{K} y_k \log p(y_k \mid B; \theta) ]</p>
+<span>
+  \(\mathcal{L}_{\text{CLF}}(\theta) = - \sum_{k=1}^{K} y_k \log p(y_k \mid B; \theta)\)
+</span>
+
 <p>These training objectives enable bGPT to understand various byte-based data and accurately mimic digital patterns of the real world. The combination of generative approaches and classification capabilities grants the model the flexibility to tackle a diverse range of problems. Through this, the model can go beyond simple pattern recognition to play a crucial role in predicting and analyzing the operations of complex digital systems.</p>
 <hr>
 <h3 id="applications">
   Applications
   <a class="anchor" href="#applications">#</a>
 </h3>
-<p><em><strong>1. Digital Media Processing</strong></em>
-bGPT is used for processing various types of digital media data such as text, audio, and images. This model performs learning targeted at media files through generative modeling, transforming the data into features and subsequently performing classification tasks based on these features.</p>
+<p><em><strong>1. Digital Media Processing</strong></em></p>
+<p>bGPT is used for processing various types of digital media data such as text, audio, and images. This model performs learning targeted at media files through generative modeling, transforming the data into features and subsequently performing classification tasks based on these features.</p>
 <p>For example, audio files are converted to and processed in WAV format, while images are processed at a low resolution in BMP format. By utilizing these standardized datasets, bGPT can develop a generalized understanding of various media types.</p>
-<p><em><strong>2. Algorithm and Hardware Simulation</strong></em>
-bGPT is particularly useful for tasks such as data conversion and CPU state modeling. This means bGPT can learn the digital conversion process and simulate the operation of CPUs to predict the state of the CPU after various commands are executed.</p>
+<p><em><strong>2. Algorithm and Hardware Simulation</strong></em></p>
+<p>bGPT is particularly useful for tasks such as data conversion and CPU state modeling. This means bGPT can learn the digital conversion process and simulate the operation of CPUs to predict the state of the CPU after various commands are executed.</p>
 <p>For example, in the task of converting the music data format from ABC notation to MIDI format, bGPT learns to transform text-based music scores in ABC notation into binary performance signals in MIDI. Additionally, this model is also capable of performing the reverse conversion from MIDI back to ABC notation.</p>
 <hr>
 <h3 id="experiment">
@@ -717,8 +733,8 @@ bGPT is particularly useful for tasks such as data conversion and CPU state mode
   <a class="anchor" href="#experiment">#</a>
 </h3>
 <p><em><strong>1. Processing Various Digital Media</strong></em></p>
-<p><strong>Overview</strong>
-To assess the flexibility and versatility of the bGPT model, we conducted experiments with various types of digital media data. This involved handling a wide range of file types including text, audio, and image data, with the aim to measure the model&rsquo;s ability to process these types and to see how well bGPT generalizes compared to specialized models. The experiment included both generative modeling and classification tasks.</p>
+<p><strong>Experiment Overview</strong>
+To assess the flexibility and versatility of the bGPT model, experiments with various types of digital media data were conducted. This involved handling a wide range of file types including text, audio, and image data, with the aim to measure the model&rsquo;s ability to process these types and to see how well bGPT generalizes compared to specialized models. The experiment included both generative modeling and classification tasks.</p>
 <p><strong>Experimental Data</strong>
 The datasets used in the experiment included:</p>
 <ul>
@@ -727,8 +743,8 @@ The datasets used in the experiment included:</p>
 <li><strong>Images</strong>: ImageNet and CIFAR-10 dataset.</li>
 </ul>
 <p>These datasets are ideal resources for evaluating the diverse media processing capabilities of bGPT.</p>
-<p><strong>Experimental Setup</strong></p>
-<p>The bGPT model was trained under various settings:</p>
+<p><strong>Experimental Setup</strong>
+The bGPT model was trained under various settings:</p>
 <ul>
 <li><strong>bGPTimage</strong>: Trained exclusively with image data (ImageNet).</li>
 <li><strong>bGPTlibri</strong>: Trained exclusively with text data (Wikipedia).</li>
@@ -742,10 +758,10 @@ The datasets used in the experiment included:</p>
 <li><strong>Image Processing</strong>: bGPTimage recorded high accuracy on the CIFAR-10 dataset but showed somewhat lower performance on ImageNet. This suggests that while bGPT works well with relatively simple images, it may have limitations with more complex images.</li>
 </ul>
 <p><em><strong>2.  Algorithm and Hardware Simulation</strong></em></p>
-<p><strong>Experiment Overview</strong></p>
-<p>One of the unique capabilities of the bGPT model is its ability to simulate the operations of algorithms and hardware. This experimental section assesses how bGPT handles complex data conversion processes and CPU state modeling tasks. These capabilities are particularly significant in the fields of cybersecurity, system diagnostics, and hardware optimization.</p>
-<p><strong>Experiment Methods</strong></p>
-<p>bGPT&rsquo;s performance was evaluated in the following two key areas:</p>
+<p><strong>Experiment Overview</strong>
+One of the unique capabilities of the bGPT model is its ability to simulate the operations of algorithms and hardware. This experimental section assesses how bGPT handles complex data conversion processes and CPU state modeling tasks. These capabilities are particularly significant in the fields of cybersecurity, system diagnostics, and hardware optimization.</p>
+<p><strong>Experiment Methods</strong>
+bGPT&rsquo;s performance was evaluated in the following two key areas:</p>
 <ul>
 <li><strong>Data Conversion</strong>: This experiment evaluates whether bGPT can learn the process of converting ABC music notation into MIDI format. The task tests how bGPT models complex algorithms and their ability to convert actual music files.</li>
 <li><strong>CPU State Modeling</strong>: CPU state modeling assesses how bGPT predicts and updates the state of a CPU based on a given set of machine instructions. This is particularly useful for understanding and predicting hardware operations.</li>
@@ -757,7 +773,7 @@ The datasets used in the experiment included:</p>
 </ul>
 <hr>
 <h3 id="conclusion-and-future-work">
-  Conclusion and Future Work
+  <strong>Conclusion and Future Work</strong>
   <a class="anchor" href="#conclusion-and-future-work">#</a>
 </h3>
 <p>bGPT has proven to be a powerful model capable of effectively processing various types of digital media data. Particularly, this model can be flexibly applied to different types of data and has demonstrated performance that can compete with models pretrained on specific datasets. These results show that bGPT can be extremely useful in solving a wide range of real-world problems.</p>
@@ -778,9 +794,9 @@ The datasets used in the experiment included:</p>
   <div class="flex flex-wrap justify-between">
 
 
-  <div><a class="flex align-center" href="https://github.com/effml-postech/blog-post/commit/0947bc5271fafa666a5b1d8cea6a555fa66e3cb5" title='Last modified by effml-postech | May 14, 2024' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/effml-postech/blog-post/commit/82a64545edcd2dca03b250e937a48d4beb224cb5" title='Last modified by hellok0314 | May 18, 2024' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="" />
-      <span>May 14, 2024</span>
+      <span>May 18, 2024</span>
     </a>
   </div>
 
@@ -828,7 +844,7 @@ The datasets used in the experiment included:</p>
         <li><a href="#exploring-bgpt"><strong>Exploring bGPT</strong></a></li>
         <li><a href="#applications">Applications</a></li>
         <li><a href="#experiment">Experiment</a></li>
-        <li><a href="#conclusion-and-future-work">Conclusion and Future Work</a></li>
+        <li><a href="#conclusion-and-future-work"><strong>Conclusion and Future Work</strong></a></li>
       </ul>
     </li>
   </ul>

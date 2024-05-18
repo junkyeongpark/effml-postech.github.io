@@ -3,15 +3,17 @@
 <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Larimar: Large Language Models with Episodic Memory Control # Authors: Payel Das (IBM AI Research), Subhajit Chaudhury (IBM AI Research)
-Neocortex-Hippocampus interactions # This paper imitate the role of brain. Humans can rapidly update their knowledge after encountering the first relevant instance. In the brain, this process is facilitated through interactions between the neocortex and the hippocampus. The hippocampus is the site for storing long-term memories, while the neocortex integrates long-term and short-term memories to relay the results to the body.">
+<meta name="description" content="Larimar: Large Language Models with Episodic Memory Control # Authors: Payel Das (IBM AI Research), Subhajit Chaudhury (IBM AI Research) et.al
+Background # Pre-trained Large Language Models (LLMs) have demonstrated outstanding performance on various Natural Language Processing (NLP) tasks. However, LLMs have faced a lot of challenges at the same time. Especially, in this post, we focus on the &ldquo;knowledge update&rdquo; problem.
+Knowledge update in LLM research # In order to keep pre-trained LLMs fact-relevant, safe, and ethical after deploymemnt, the knowledge of the LLM needs to be constantly updated.">
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
 <meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/docs/spring24/22_/">
   <meta property="og:site_name" content="Efficient ML Systems">
   <meta property="og:title" content="Efficient ML Systems">
-  <meta property="og:description" content="Larimar: Large Language Models with Episodic Memory Control # Authors: Payel Das (IBM AI Research), Subhajit Chaudhury (IBM AI Research)
-Neocortex-Hippocampus interactions # This paper imitate the role of brain. Humans can rapidly update their knowledge after encountering the first relevant instance. In the brain, this process is facilitated through interactions between the neocortex and the hippocampus. The hippocampus is the site for storing long-term memories, while the neocortex integrates long-term and short-term memories to relay the results to the body.">
+  <meta property="og:description" content="Larimar: Large Language Models with Episodic Memory Control # Authors: Payel Das (IBM AI Research), Subhajit Chaudhury (IBM AI Research) et.al
+Background # Pre-trained Large Language Models (LLMs) have demonstrated outstanding performance on various Natural Language Processing (NLP) tasks. However, LLMs have faced a lot of challenges at the same time. Especially, in this post, we focus on the “knowledge update” problem.
+Knowledge update in LLM research # In order to keep pre-trained LLMs fact-relevant, safe, and ethical after deploymemnt, the knowledge of the LLM needs to be constantly updated.">
   <meta property="og:locale" content="en-us">
   <meta property="og:type" content="website">
 <title>22 | Efficient ML Systems</title>
@@ -20,7 +22,7 @@ Neocortex-Hippocampus interactions # This paper imitate the role of brain. Human
 <link rel="canonical" href="http://localhost:1313/docs/spring24/22_/">
 <link rel="stylesheet" href="/book.min.309b7ed028807cdb68d8d61e26d609f48369c098dbf5e4d8c0dcf4cdf49feafc.css" integrity="sha256-MJt&#43;0CiAfNto2NYeJtYJ9INpwJjb9eTYwNz0zfSf6vw=" crossorigin="anonymous">
   <script defer src="/flexsearch.min.js"></script>
-  <script defer src="/en.search.min.bf67d519c9158c61e61aa2159f96e680798e99030f3689e965832ab445329f11.js" integrity="sha256-v2fVGckVjGHmGqIVn5bmgHmOmQMPNonpZYMqtEUynxE=" crossorigin="anonymous"></script>
+  <script defer src="/en.search.min.9faf5ba385befef54c83a4d8245bd6362a6c20d765f21bfeb434a81acec8a150.js" integrity="sha256-n69bo4W&#43;/vVMg6TYJFvWNipsINdl8hv&#43;tDSoGs7IoVA=" crossorigin="anonymous"></script>
 
   
 
@@ -610,8 +612,20 @@ https://github.com/alex-shpak/hugo-book
   
 <nav id="TableOfContents">
   <ul>
-    <li><a href="#neocortex-hippocampus-interactions">Neocortex-Hippocampus interactions</a></li>
+    <li><a href="#background">Background</a>
+      <ul>
+        <li><a href="#knowledge-update-in-llm-research">Knowledge update in LLM research</a></li>
+        <li><a href="#autoencoder">Autoencoder</a></li>
+        <li><a href="#memory-network">Memory network</a></li>
+        <li><a href="#neocortex-hippocampus-interactions">Neocortex-Hippocampus interactions</a></li>
+      </ul>
+    </li>
     <li><a href="#contributions">Contributions</a></li>
+    <li><a href="#model-architecture">Model architecture</a></li>
+    <li><a href="#memory-operations">Memory Operations</a></li>
+    <li><a href="#results">Results</a></li>
+    <li><a href="#conclusion">Conclusion</a></li>
+    <li><a href="#references">References</a></li>
   </ul>
 </nav>
 
@@ -628,12 +642,56 @@ https://github.com/alex-shpak/hugo-book
   Larimar: Large Language Models with Episodic Memory Control
   <a class="anchor" href="#larimar-large-language-models-with-episodic-memory-control">#</a>
 </h1>
-<p><em>Authors: Payel Das (IBM AI Research), Subhajit Chaudhury (IBM AI Research)</em></p>
-<h2 id="neocortex-hippocampus-interactions">
+<p><em>Authors: Payel Das (IBM AI Research), Subhajit Chaudhury (IBM AI Research) et.al</em></p>
+<h2 id="background">
+  Background
+  <a class="anchor" href="#background">#</a>
+</h2>
+<p>Pre-trained Large Language Models (LLMs) have demonstrated outstanding performance on various Natural Language Processing (NLP) tasks.
+However, LLMs have faced a lot of challenges at the same time. Especially, in this post, we focus on the &ldquo;knowledge update&rdquo; problem.</p>
+<h3 id="knowledge-update-in-llm-research">
+  Knowledge update in LLM research
+  <a class="anchor" href="#knowledge-update-in-llm-research">#</a>
+</h3>
+<p>In order to keep pre-trained LLMs fact-relevant, safe, and ethical after deploymemnt, the knowledge of the LLM needs to be constantly updated. To be specific, model editing is mandatory to remove the undesired, incorrect, or obsolete facts from the LLM&rsquo;s &ldquo;memory&rdquo;, and optionally replace it with desired outcome. Firgures below shows why do we need knowledge update with detailed examples.</p>
+<p align="center">
+    <img src='knowledge update.png' width="600">
+</p>
+<p align="center">
+    (Fig1. Knowledge update: New knowledge should be injected constantly)
+</p>
+<p align="center">
+    <img src='context length generalization.png' width="600">
+</p>
+<p align="center">
+    (Fig2. Context length generalization: The ability to quickly update the LLM can help with "input context length generalization problem")
+</p>
+<p align="center">
+    <img src='selective fact forgetting.png' width="600">
+</p>
+<p align="center">
+    (Fig3. Selective fact forgetting: LLMs should forget personal & sensitive data)
+</p>
+<h3 id="autoencoder">
+  Autoencoder
+  <a class="anchor" href="#autoencoder">#</a>
+</h3>
+<p>TODO : This content can be erased</p>
+<p align="center">
+    <img src='auto encoder.png' width="600">
+</p>
+<p align="center">
+    (Fig4. Autoencoder)
+</p>
+<h3 id="memory-network">
+  Memory network
+  <a class="anchor" href="#memory-network">#</a>
+</h3>
+<h3 id="neocortex-hippocampus-interactions">
   Neocortex-Hippocampus interactions
   <a class="anchor" href="#neocortex-hippocampus-interactions">#</a>
-</h2>
-<p>This paper imitate the role of brain. Humans can rapidly update their knowledge after encountering the first relevant instance. In the brain, this process is facilitated through interactions between the neocortex and the hippocampus. The hippocampus is the site for storing long-term memories, while the neocortex integrates long-term and short-term memories to relay the results to the body.</p>
+</h3>
+<p>This paper imitates the role of brain. Humans can rapidly update their knowledge after encountering the first relevant instance. In the brain, this process is facilitated through interactions between the neocortex and the hippocampus. The hippocampus is the site for storing long-term memories, while the neocortex integrates long-term and short-term memories to relay the results to the body.</p>
 <p align="center">
     <img src=brain.png width="400"> 
 </p>
@@ -653,12 +711,51 @@ Selective Fact Forgetting and Information Leakage Prevention:</p>
 </li>
 <li>
 <p>Larimar effectively supports selective fact forgetting and prevents information leakage using its one-shot memory updating mechanism.
-Recursive Search-Based Solution for Long Context Generalization:</p>
-</li>
-<li>
-<p>A simple recursive search-based approach is provided to enable Larimar&rsquo;s memory to generalize to longer input contexts.</p>
+Recursive Search-Based Solution for Long Context Generalization: A simple recursive search-based approach is provided to enable Larimar&rsquo;s memory to generalize to longer input contexts.</p>
 </li>
 </ol>
+<h2 id="model-architecture">
+  Model architecture
+  <a class="anchor" href="#model-architecture">#</a>
+</h2>
+<p>Larimar consists of three main components: encoder, decoder, and adaptive memory.</p>
+<ol>
+<li>Encoder: Transforms the input into a latent vector</li>
+<li>Decoder: Generates an answer to the question conditioned on the memory</li>
+<li>Memory: Stores episodes in encoded form</li>
+</ol>
+<p align="center">
+    <img src='architecture.png' width="600">
+</p>
+<p align="center">
+    (Fig6. Larimar architecture)
+</p>
+<h2 id="memory-operations">
+  Memory Operations
+  <a class="anchor" href="#memory-operations">#</a>
+</h2>
+<h2 id="results">
+  Results
+  <a class="anchor" href="#results">#</a>
+</h2>
+<h2 id="conclusion">
+  Conclusion
+  <a class="anchor" href="#conclusion">#</a>
+</h2>
+<h2 id="references">
+  References
+  <a class="anchor" href="#references">#</a>
+</h2>
+<p><a href="https://arxiv.org/abs/2310.16218">https://arxiv.org/abs/2310.16218</a>
+-&gt; Knowledge Editing for Large Language Models: A Survey</p>
+<p><a href="https://arxiv.org/abs/2207.04901">https://arxiv.org/abs/2207.04901</a>
+-&gt; Exploring Length Generalization in Large Language Models</p>
+<p><a href="https://arxiv.org/abs/2402.05813">https://arxiv.org/abs/2402.05813</a>
+-&gt; Selective Forgetting: Advancing Machine Unlearning Techniques and Evaluation in Language Models</p>
+<p><a href="https://arxiv.org/abs/2403.11901">https://arxiv.org/abs/2403.11901</a></p>
+<p><a href="https://www.rallyware.com/blog/the_neuroscience_behind_successful_talent_development">brain figure</a></p>
+<p><a href="https://openreview.net/forum?id=Harn4_EZBw">https://openreview.net/forum?id=Harn4_EZBw</a>
+-&gt; Generative Pseudo-Inverse Memory</p>
 </article>
  
       
@@ -668,9 +765,9 @@ Recursive Search-Based Solution for Long Context Generalization:</p>
   <div class="flex flex-wrap justify-between">
 
 
-  <div><a class="flex align-center" href="https://github.com/effml-postech/blog-post/commit/0947bc5271fafa666a5b1d8cea6a555fa66e3cb5" title='Last modified by effml-postech | May 14, 2024' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/effml-postech/blog-post/commit/79fa1343d7320a096c764d279966792d555a6799" title='Last modified by skjang238 | May 18, 2024' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="" />
-      <span>May 14, 2024</span>
+      <span>May 18, 2024</span>
     </a>
   </div>
 
@@ -713,8 +810,20 @@ Recursive Search-Based Solution for Long Context Generalization:</p>
   
 <nav id="TableOfContents">
   <ul>
-    <li><a href="#neocortex-hippocampus-interactions">Neocortex-Hippocampus interactions</a></li>
+    <li><a href="#background">Background</a>
+      <ul>
+        <li><a href="#knowledge-update-in-llm-research">Knowledge update in LLM research</a></li>
+        <li><a href="#autoencoder">Autoencoder</a></li>
+        <li><a href="#memory-network">Memory network</a></li>
+        <li><a href="#neocortex-hippocampus-interactions">Neocortex-Hippocampus interactions</a></li>
+      </ul>
+    </li>
     <li><a href="#contributions">Contributions</a></li>
+    <li><a href="#model-architecture">Model architecture</a></li>
+    <li><a href="#memory-operations">Memory Operations</a></li>
+    <li><a href="#results">Results</a></li>
+    <li><a href="#conclusion">Conclusion</a></li>
+    <li><a href="#references">References</a></li>
   </ul>
 </nav>
 
