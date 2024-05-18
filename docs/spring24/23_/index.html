@@ -678,7 +678,10 @@ bGPT is equipped with a hierarchical structure designed to efficiently handle en
  for <span>
   \(( 1 \leq i \leq N)\)
 </span>
-, <span>
+, if <span>
+  \(T \mod S \neq 0\)
+</span>
+, the last patch defined as <span>
   \(P_N = [b_{(N-1)S&#43;1}, \ldots, b_T, \underbrace{e, \ldots, e}_{S - (T \mod S)}]\)
 </span>
  where <span>
@@ -699,7 +702,7 @@ bGPT is equipped with a hierarchical structure designed to efficiently handle en
 <p>This approach requires the model to predict the next byte in a given byte sequence. The model takes the byte sequence <span>
   \(B = \{b_1, b_2, \ldots, b_T\}\)
 </span>
-  as input and utilizes all previous byte information to predict the next byte <span>
+ as input and utilizes all previous byte information to predict the next byte <span>
   \(b_{i&#43;1}\)
 </span>
  at each position.</p>
