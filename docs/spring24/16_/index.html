@@ -24,7 +24,7 @@ Therefore there are many efforts like “early exiting” to reduce total FLOPs 
 <link rel="canonical" href="http://localhost:1313/docs/spring24/16_/">
 <link rel="stylesheet" href="/book.min.309b7ed028807cdb68d8d61e26d609f48369c098dbf5e4d8c0dcf4cdf49feafc.css" integrity="sha256-MJt&#43;0CiAfNto2NYeJtYJ9INpwJjb9eTYwNz0zfSf6vw=" crossorigin="anonymous">
   <script defer src="/flexsearch.min.js"></script>
-  <script defer src="/en.search.min.63e1b7ae3e6473f80a256e4caa10f7db6c7a5de5f03cb79d919b8239a6390194.js" integrity="sha256-Y&#43;G3rj5kc/gKJW5MqhD322x6XeXwPLedkZuCOaY5AZQ=" crossorigin="anonymous"></script>
+  <script defer src="/en.search.min.40a19fd96c0bd14399c31c2d91678497cfd6a887d0819defb7ef156a24a9c4d0.js" integrity="sha256-QKGf2WwL0UOZwxwtkWeEl8/WqIfQgZ3vt&#43;8VaiSpxNA=" crossorigin="anonymous"></script>
 
   
 
@@ -614,18 +614,18 @@ https://github.com/alex-shpak/hugo-book
   
 <nav id="TableOfContents">
   <ul>
-    <li><a href="#background">Background</a>
+    <li><a href="#background"><strong>Background</strong></a>
       <ul>
         <li></li>
       </ul>
     </li>
-    <li><a href="#implementing-mixture-of-depth-transformers">Implementing Mixture-of-Depth Transformers</a>
+    <li><a href="#implementing-mixture-of-depth-transformers"><strong>Implementing Mixture-of-Depth Transformers</strong></a>
       <ul>
         <li></li>
       </ul>
     </li>
-    <li><a href="#results--discussion">Results &amp; Discussion</a></li>
-    <li><a href="#references">References</a></li>
+    <li><a href="#results--discussion"><strong>Results &amp; Discussion</strong></a></li>
+    <li><a href="#references"><strong>References</strong></a></li>
   </ul>
 </nav>
 
@@ -639,7 +639,7 @@ https://github.com/alex-shpak/hugo-book
       
       
   <article class="markdown book-article"><h1 id="mixture-of-depths-dynamically-allocating-compute-in-transformer-based-language-models">
-  Mixture-of-Depths: Dynamically allocating compute in transformer-based language models
+  <strong>Mixture-of-Depths: Dynamically allocating compute in transformer-based language models</strong>
   <a class="anchor" href="#mixture-of-depths-dynamically-allocating-compute-in-transformer-based-language-models">#</a>
 </h1>
 <p><em>Authors: Dativd Raposo(Google DeepMind) and Adam Santoro(Google DeepMind) et.al</em></p>
@@ -661,7 +661,7 @@ So, the methods should be sophistically addressed like harmonious with current h
 <li>With this method, MoD achieves better performance than vanilla Transformer in isoFLOPs &amp; faster inference speed.</li>
 </ol>
 <h2 id="background">
-  Background
+  <strong>Background</strong>
   <a class="anchor" href="#background">#</a>
 </h2>
 <h4 id="early-exit-method">
@@ -690,35 +690,41 @@ Difference between MoD is, MoD can choose whether skip middle layer or not, but 
 Like MoD, token-level routing decisions are made across the network depth.<br>
 Difference between MoD is, MoD chooses path to transformer or to residual connection, MoE chooses path to transformer(Expert) or to transformer(Expert) or both.</p>
 <h2 id="implementing-mixture-of-depth-transformers">
-  Implementing Mixture-of-Depth Transformers
+  <strong>Implementing Mixture-of-Depth Transformers</strong>
   <a class="anchor" href="#implementing-mixture-of-depth-transformers">#</a>
 </h2>
+<p>High-level strategy of Mixture-of-Depths is as follows:</p>
 <h4 id="defining-a-compute-budget">
-  Defining a compute budget
+  <strong>Defining a compute budget</strong>
   <a class="anchor" href="#defining-a-compute-budget">#</a>
 </h4>
+<ul>
+<li>First, to make smaller compute budget per forward pass than vanila transformer, we limit the number of tokens in a sequence for computations like self-attention and MLP. This concept, called <strong>capacity</strong>, defines the total tokens processed and determines the FLOPs required.</li>
+<li>For example, in vanila transformers, capacity($T$) covers all tokens, but in MoE transformers, it&rsquo;s dividing among multiple experts.</li>
+<li>Lowering computation capacity can reduce the compute budget per forward pass without performance loss if the model learns to prioritize important tokens.</li>
+</ul>
 <h4 id="routing-around-transformer-blocks">
-  Routing around transformer blocks
+  <strong>Routing around transformer blocks</strong>
   <a class="anchor" href="#routing-around-transformer-blocks">#</a>
 </h4>
 <h4 id="routing-schemes">
-  Routing schemes
+  <strong>Routing schemes</strong>
   <a class="anchor" href="#routing-schemes">#</a>
 </h4>
 <h4 id="routing-implementation">
-  Routing implementation
+  <strong>Routing implementation</strong>
   <a class="anchor" href="#routing-implementation">#</a>
 </h4>
 <h4 id="sampling">
-  Sampling
+  <strong>Sampling</strong>
   <a class="anchor" href="#sampling">#</a>
 </h4>
 <h2 id="results--discussion">
-  Results &amp; Discussion
+  <strong>Results &amp; Discussion</strong>
   <a class="anchor" href="#results--discussion">#</a>
 </h2>
 <h2 id="references">
-  References
+  <strong>References</strong>
   <a class="anchor" href="#references">#</a>
 </h2>
 <p>Fig 2. <a href="https://www.sciencedirect.com/science/article/pii/S0893608022002532">https://www.sciencedirect.com/science/article/pii/S0893608022002532</a><br>
@@ -732,9 +738,9 @@ Fig 3. <a href="https://deepgram.com/learn/mixture-of-experts-ml-model-guide">ht
   <div class="flex flex-wrap justify-between">
 
 
-  <div><a class="flex align-center" href="https://github.com/effml-postech/blog-post/commit/5ebf7ff2f2670631fc1509634cd2db634d680c66" title='Last modified by Minjae Park | May 18, 2024' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/effml-postech/blog-post/commit/39f56a309aa1499fedea7a91f6f06a1afb46b974" title='Last modified by Inkwan Hwang | May 19, 2024' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="" />
-      <span>May 18, 2024</span>
+      <span>May 19, 2024</span>
     </a>
   </div>
 
@@ -777,18 +783,18 @@ Fig 3. <a href="https://deepgram.com/learn/mixture-of-experts-ml-model-guide">ht
   
 <nav id="TableOfContents">
   <ul>
-    <li><a href="#background">Background</a>
+    <li><a href="#background"><strong>Background</strong></a>
       <ul>
         <li></li>
       </ul>
     </li>
-    <li><a href="#implementing-mixture-of-depth-transformers">Implementing Mixture-of-Depth Transformers</a>
+    <li><a href="#implementing-mixture-of-depth-transformers"><strong>Implementing Mixture-of-Depth Transformers</strong></a>
       <ul>
         <li></li>
       </ul>
     </li>
-    <li><a href="#results--discussion">Results &amp; Discussion</a></li>
-    <li><a href="#references">References</a></li>
+    <li><a href="#results--discussion"><strong>Results &amp; Discussion</strong></a></li>
+    <li><a href="#references"><strong>References</strong></a></li>
   </ul>
 </nav>
 

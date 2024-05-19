@@ -3,13 +3,35 @@
 <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content=" # ">
+<meta name="description" content="5.Unit Scaling # 5.1 A framework for scaling computational graphs # Computational Graphs
+Forward and backward graphs
+Scaled ops
+Proposition 5.1
+Scaled computational graph
+Constraint-scaled computational graphs
+Theorem 5.2
+5.2 A scaling strategy for unit variance # Unit scaled computational graphs
+Selecting scaling factors
+5.3 Weighted addition # 5.4 Recipe # 5.5 Example # 6. Results # 6.1 Character language modelling # Experimental Setup
+Results
+6.2 Masked language modelling # Experimental Setup">
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
 <meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/docs/spring24/03_/">
   <meta property="og:site_name" content="Efficient ML Systems">
   <meta property="og:title" content="Efficient ML Systems">
-  <meta property="og:description" content=" # ">
+  <meta property="og:description" content="5.Unit Scaling # 5.1 A framework for scaling computational graphs # Computational Graphs
+Forward and backward graphs
+Scaled ops
+Proposition 5.1
+Scaled computational graph
+Constraint-scaled computational graphs
+Theorem 5.2
+5.2 A scaling strategy for unit variance # Unit scaled computational graphs
+Selecting scaling factors
+5.3 Weighted addition # 5.4 Recipe # 5.5 Example # 6. Results # 6.1 Character language modelling # Experimental Setup
+Results
+6.2 Masked language modelling # Experimental Setup">
   <meta property="og:locale" content="en-us">
   <meta property="og:type" content="website">
 <title>03 | Efficient ML Systems</title>
@@ -18,7 +40,7 @@
 <link rel="canonical" href="http://localhost:1313/docs/spring24/03_/">
 <link rel="stylesheet" href="/book.min.309b7ed028807cdb68d8d61e26d609f48369c098dbf5e4d8c0dcf4cdf49feafc.css" integrity="sha256-MJt&#43;0CiAfNto2NYeJtYJ9INpwJjb9eTYwNz0zfSf6vw=" crossorigin="anonymous">
   <script defer src="/flexsearch.min.js"></script>
-  <script defer src="/en.search.min.fcd41ff32e407b953b0dbf671d853ce898e5930ff1644f83f6ddaf8cdc313b0d.js" integrity="sha256-/NQf8y5Ae5U7Db9nHYU86Jjlkw/xZE&#43;D9t2vjNwxOw0=" crossorigin="anonymous"></script>
+  <script defer src="/en.search.min.40a19fd96c0bd14399c31c2d91678497cfd6a887d0819defb7ef156a24a9c4d0.js" integrity="sha256-QKGf2WwL0UOZwxwtkWeEl8/WqIfQgZ3vt&#43;8VaiSpxNA=" crossorigin="anonymous"></script>
 
   
 
@@ -606,7 +628,27 @@ https://github.com/alex-shpak/hugo-book
   <aside class="hidden clearfix">
     
   
-<nav id="TableOfContents"></nav>
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#5unit-scaling">5.Unit Scaling</a>
+      <ul>
+        <li><a href="#51-a-framework-for-scaling-computational-graphs">5.1 A framework for scaling computational graphs</a></li>
+        <li><a href="#52-a-scaling-strategy-for-unit-variance">5.2 A scaling strategy for unit variance</a></li>
+        <li><a href="#53-weighted-addition">5.3 Weighted addition</a></li>
+        <li><a href="#54-recipe">5.4 Recipe</a></li>
+        <li><a href="#55-example">5.5 Example</a></li>
+      </ul>
+    </li>
+    <li><a href="#6-results">6. Results</a>
+      <ul>
+        <li><a href="#61-character-language-modelling">6.1 Character language modelling</a></li>
+        <li><a href="#62-masked-language-modelling">6.2 Masked language modelling</a></li>
+      </ul>
+    </li>
+    <li><a href="#7-related-work">7. Related Work</a></li>
+    <li><a href="#8-discussion">8. Discussion</a></li>
+  </ul>
+</nav>
 
 
 
@@ -617,10 +659,71 @@ https://github.com/alex-shpak/hugo-book
 
       
       
-  <article class="markdown book-article"><h1 id="heading">
-  
-  <a class="anchor" href="#heading">#</a>
-</h1>
+  <article class="markdown book-article"><h2 id="5unit-scaling">
+  5.Unit Scaling
+  <a class="anchor" href="#5unit-scaling">#</a>
+</h2>
+<h3 id="51-a-framework-for-scaling-computational-graphs">
+  5.1 A framework for scaling computational graphs
+  <a class="anchor" href="#51-a-framework-for-scaling-computational-graphs">#</a>
+</h3>
+<p><strong>Computational Graphs</strong></p>
+<p><strong>Forward and backward graphs</strong></p>
+<p><strong>Scaled ops</strong></p>
+<p><strong>Proposition 5.1</strong></p>
+<p><strong>Scaled computational graph</strong></p>
+<p><strong>Constraint-scaled computational graphs</strong></p>
+<p><strong>Theorem 5.2</strong></p>
+<h3 id="52-a-scaling-strategy-for-unit-variance">
+  5.2 A scaling strategy for unit variance
+  <a class="anchor" href="#52-a-scaling-strategy-for-unit-variance">#</a>
+</h3>
+<p><strong>Unit scaled computational graphs</strong></p>
+<p><strong>Selecting scaling factors</strong></p>
+<h3 id="53-weighted-addition">
+  5.3 Weighted addition
+  <a class="anchor" href="#53-weighted-addition">#</a>
+</h3>
+<h3 id="54-recipe">
+  5.4 Recipe
+  <a class="anchor" href="#54-recipe">#</a>
+</h3>
+<h3 id="55-example">
+  5.5 Example
+  <a class="anchor" href="#55-example">#</a>
+</h3>
+
+
+
+
+
+<img src="./Figure4.png" alt="." width="600" height="600">
+<h2 id="6-results">
+  6. Results
+  <a class="anchor" href="#6-results">#</a>
+</h2>
+<h3 id="61-character-language-modelling">
+  6.1 Character language modelling
+  <a class="anchor" href="#61-character-language-modelling">#</a>
+</h3>
+<p><strong>Experimental Setup</strong></p>
+<p><strong>Results</strong></p>
+<h3 id="62-masked-language-modelling">
+  6.2 Masked language modelling
+  <a class="anchor" href="#62-masked-language-modelling">#</a>
+</h3>
+<p><strong>Experimental Setup</strong></p>
+<p><strong>Results</strong></p>
+<h2 id="7-related-work">
+  7. Related Work
+  <a class="anchor" href="#7-related-work">#</a>
+</h2>
+<p><strong>Variance scaling analysis</strong></p>
+<p><strong>FP8 inference</strong></p>
+<h2 id="8-discussion">
+  8. Discussion
+  <a class="anchor" href="#8-discussion">#</a>
+</h2>
 </article>
  
       
@@ -630,9 +733,9 @@ https://github.com/alex-shpak/hugo-book
   <div class="flex flex-wrap justify-between">
 
 
-  <div><a class="flex align-center" href="https://github.com/effml-postech/blog-post/commit/da90428444034b6b22e3a6d017607321c43cb2e1" title='Last modified by effml-postech | May 14, 2024' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/effml-postech/blog-post/commit/c628dc70f8571a4b30bc084c6f2a93f032042ef6" title='Last modified by MoonSeongRok | May 19, 2024' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="" />
-      <span>May 14, 2024</span>
+      <span>May 19, 2024</span>
     </a>
   </div>
 
@@ -673,7 +776,27 @@ https://github.com/alex-shpak/hugo-book
       <div class="book-toc-content">
         
   
-<nav id="TableOfContents"></nav>
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#5unit-scaling">5.Unit Scaling</a>
+      <ul>
+        <li><a href="#51-a-framework-for-scaling-computational-graphs">5.1 A framework for scaling computational graphs</a></li>
+        <li><a href="#52-a-scaling-strategy-for-unit-variance">5.2 A scaling strategy for unit variance</a></li>
+        <li><a href="#53-weighted-addition">5.3 Weighted addition</a></li>
+        <li><a href="#54-recipe">5.4 Recipe</a></li>
+        <li><a href="#55-example">5.5 Example</a></li>
+      </ul>
+    </li>
+    <li><a href="#6-results">6. Results</a>
+      <ul>
+        <li><a href="#61-character-language-modelling">6.1 Character language modelling</a></li>
+        <li><a href="#62-masked-language-modelling">6.2 Masked language modelling</a></li>
+      </ul>
+    </li>
+    <li><a href="#7-related-work">7. Related Work</a></li>
+    <li><a href="#8-discussion">8. Discussion</a></li>
+  </ul>
+</nav>
 
 
  

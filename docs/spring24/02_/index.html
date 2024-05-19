@@ -3,13 +3,15 @@
 <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content=" # ">
+<meta name="description" content="Spectrally Pruned Gaussian Fields with Neural Compensation (SUNDAE) # *Authors: Yang, Runyi, et al
+Summary # Fig1. Comparison of 3D gaussian splatting and proposed SUNDAE Conventional 3D Gaussian Splatting (3DGS) # Pros: Superior rendering speed and quality Cons: High memory consumption Proposed SUNDAE # It constructs a memory-efficient Gaussian field using spectral pruning and neural compensation. It considers the relationship between primitives, reducing memory usage while maintaining rendering quality. It significantly reduces memory consumption while preserving high rendering quality.">
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
 <meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/docs/spring24/02_/">
   <meta property="og:site_name" content="Efficient ML Systems">
   <meta property="og:title" content="Efficient ML Systems">
-  <meta property="og:description" content=" # ">
+  <meta property="og:description" content="Spectrally Pruned Gaussian Fields with Neural Compensation (SUNDAE) # *Authors: Yang, Runyi, et al
+Summary # Fig1. Comparison of 3D gaussian splatting and proposed SUNDAE Conventional 3D Gaussian Splatting (3DGS) # Pros: Superior rendering speed and quality Cons: High memory consumption Proposed SUNDAE # It constructs a memory-efficient Gaussian field using spectral pruning and neural compensation. It considers the relationship between primitives, reducing memory usage while maintaining rendering quality. It significantly reduces memory consumption while preserving high rendering quality.">
   <meta property="og:locale" content="en-us">
   <meta property="og:type" content="website">
 <title>02 | Efficient ML Systems</title>
@@ -18,7 +20,7 @@
 <link rel="canonical" href="http://localhost:1313/docs/spring24/02_/">
 <link rel="stylesheet" href="/book.min.309b7ed028807cdb68d8d61e26d609f48369c098dbf5e4d8c0dcf4cdf49feafc.css" integrity="sha256-MJt&#43;0CiAfNto2NYeJtYJ9INpwJjb9eTYwNz0zfSf6vw=" crossorigin="anonymous">
   <script defer src="/flexsearch.min.js"></script>
-  <script defer src="/en.search.min.fcd41ff32e407b953b0dbf671d853ce898e5930ff1644f83f6ddaf8cdc313b0d.js" integrity="sha256-/NQf8y5Ae5U7Db9nHYU86Jjlkw/xZE&#43;D9t2vjNwxOw0=" crossorigin="anonymous"></script>
+  <script defer src="/en.search.min.40a19fd96c0bd14399c31c2d91678497cfd6a887d0819defb7ef156a24a9c4d0.js" integrity="sha256-QKGf2WwL0UOZwxwtkWeEl8/WqIfQgZ3vt&#43;8VaiSpxNA=" crossorigin="anonymous"></script>
 
   
 
@@ -606,7 +608,33 @@ https://github.com/alex-shpak/hugo-book
   <aside class="hidden clearfix">
     
   
-<nav id="TableOfContents"></nav>
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#summary">Summary</a>
+      <ul>
+        <li><a href="#conventional-3d-gaussian-splatting-3dgs">Conventional 3D Gaussian Splatting (3DGS)</a></li>
+        <li><a href="#proposed-sundae">Proposed SUNDAE</a></li>
+      </ul>
+    </li>
+    <li><a href="#introduction">Introduction</a>
+      <ul>
+        <li><a href="#3dgs">3DGS</a></li>
+        <li><a href="#spectral-graph-pruning">Spectral graph pruning</a></li>
+        <li><a href="#neural-compensation">Neural compensation</a></li>
+        <li><a href="#contributions">Contributions</a></li>
+      </ul>
+    </li>
+    <li><a href="#methods">Methods</a></li>
+    <li><a href="#results">Results</a>
+      <ul>
+        <li><a href="#quantitative-results">Quantitative Results</a></li>
+        <li><a href="#qualitative-results">Qualitative Results</a></li>
+        <li><a href="#ablation-study">Ablation Study</a></li>
+      </ul>
+    </li>
+    <li><a href="#conclusion">Conclusion</a></li>
+  </ul>
+</nav>
 
 
 
@@ -617,10 +645,163 @@ https://github.com/alex-shpak/hugo-book
 
       
       
-  <article class="markdown book-article"><h1 id="heading">
-  
-  <a class="anchor" href="#heading">#</a>
+  <article class="markdown book-article"><h1 id="spectrally-pruned-gaussian-fields-with-neural-compensation-sundae">
+  Spectrally Pruned Gaussian Fields with Neural Compensation (SUNDAE)
+  <a class="anchor" href="#spectrally-pruned-gaussian-fields-with-neural-compensation-sundae">#</a>
 </h1>
+<p>*Authors: Yang, Runyi, et al</p>
+<h2 id="summary">
+  Summary
+  <a class="anchor" href="#summary">#</a>
+</h2>
+<p align="center">
+    <img src='fig1.png' width="600">
+</p>
+<p align="center">
+    Fig1. Comparison of 3D gaussian splatting and proposed SUNDAE
+</p>
+<h3 id="conventional-3d-gaussian-splatting-3dgs">
+  Conventional 3D Gaussian Splatting (3DGS)
+  <a class="anchor" href="#conventional-3d-gaussian-splatting-3dgs">#</a>
+</h3>
+<ul>
+<li>Pros: Superior rendering speed and quality</li>
+<li>Cons: High memory consumption</li>
+</ul>
+<h3 id="proposed-sundae">
+  Proposed SUNDAE
+  <a class="anchor" href="#proposed-sundae">#</a>
+</h3>
+<ul>
+<li>It constructs a memory-efficient Gaussian field using spectral pruning and neural compensation.</li>
+<li>It considers the relationship between primitives, reducing memory usage while maintaining rendering quality.</li>
+<li>It significantly reduces memory consumption while preserving high rendering quality.</li>
+<li>Code: <a href="https://runyiyang.github.io/projects/SUNDAE/">https://runyiyang.github.io/projects/SUNDAE/</a>.</li>
+</ul>
+<h2 id="introduction">
+  Introduction
+  <a class="anchor" href="#introduction">#</a>
+</h2>
+<p align="center">
+    <img src='fig2.png' width="600">
+</p>
+<p align="center">
+    Fig2. Conceptual illustration of vanilla 3DGS, SUNDAE spectral pruning technique, and neural compensation.
+</p>  
+<h3 id="3dgs">
+  3DGS
+  <a class="anchor" href="#3dgs">#</a>
+</h3>
+<p>Recently, 3DGS has been proposed as a novel 3D scene representation, utilizing a set of 3D positions, opacity, anisotropic covariance, and spherical harmonic (SH) coefficients to represent a 3D scene (left panel of Fig. 2).
+3DGS demonstrates notable advantages in rendering speed, rendering quality, and training time. But it requires a large storage.</p>
+<h3 id="spectral-graph-pruning">
+  Spectral graph pruning
+  <a class="anchor" href="#spectral-graph-pruning">#</a>
+</h3>
+<p>Gaussian fields utilize a collection of Gaussian primitives as the representation of the scene. As these primitives are irregularly distributed in 3D space, we propose a graph-based data structure, rather than regular structures like grids, to capture the relationship between these primitives (middle panel of Fig. 2).</p>
+<h3 id="neural-compensation">
+  Neural compensation
+  <a class="anchor" href="#neural-compensation">#</a>
+</h3>
+<p>To address an inevitable decrease in rendering quality, they employ a neural compensation head to compensate for this quality loss (right panel of Fig. 2).</p>
+<h3 id="contributions">
+  Contributions
+  <a class="anchor" href="#contributions">#</a>
+</h3>
+<ul>
+<li>A newly proposed primitive pruning framework for Gaussian fields based upon the spectrum of primitive graphs;</li>
+<li>A novel feature splatting and mixing module to compensate for the performance drop caused by the pruning;</li>
+<li>State-of-the-art results, in terms of both quality and speed, on various benchmarks with low memory footprint.</li>
+</ul>
+<h2 id="methods">
+  Methods
+  <a class="anchor" href="#methods">#</a>
+</h2>
+<h2 id="results">
+  Results
+  <a class="anchor" href="#results">#</a>
+</h2>
+<h3 id="quantitative-results">
+  Quantitative Results
+  <a class="anchor" href="#quantitative-results">#</a>
+</h3>
+<p align="center">
+    <img src='tab1.png' width="600">
+</p>
+<p align="center">
+    Table 1. Quatitative evaluation of SUNDAE.
+</p>  
+<p>SUNDAE demonstrates strong performance across various metrics, including PSNR, SSIM, FPS, and memory usage.</p>
+<ul>
+<li>Compared to existing methods on the MipNeRF360 dataset, SUNDAE achieves a balance between rendering quality and efficiency, maintaining high FPS rates while significantly reducing memory consumption.</li>
+<li>Even at low sampling rates, SUNDAE remains competitive with established approaches, showcasing the effectiveness of its spectral pruning and neural compensation techniques in managing Gaussian primitive relationships and retaining scene information.</li>
+<li>Overall, SUNDAE represents scenes more compactly while maintaining high quality rendering.</li>
+</ul>
+<h3 id="qualitative-results">
+  Qualitative Results
+  <a class="anchor" href="#qualitative-results">#</a>
+</h3>
+<p align="center">
+    <img src='fig5.png' width="600">
+</p>
+<p align="center">
+    Fig3. Qualitative results of SUNDAE.
+</p>  
+<p>The qualitative results demonstrate that SUNDAE achieves comparable novel view synthesis quality with significantly lower memory consumption (1% or 10%).</p>
+<ul>
+<li>The graph effectively captures primitive relationships, while the neural compensation head preserves rendering quality.</li>
+<li>Spectral pruning notably removes outliers near the camera, enhancing scene coherence.</li>
+</ul>
+<h3 id="ablation-study">
+  Ablation Study
+  <a class="anchor" href="#ablation-study">#</a>
+</h3>
+<p align="center">
+    <img src='fig7.png' width="600">
+</p>
+<p align="center">
+    Fig4. Ablations experiment on the ratio 𝛾 of the bandlimited filter of graph based pruning.
+</p>  
+<ul>
+<li><strong>Band-limited ratio of Graph-based pruning:</strong>
+<ul>
+<li>The band-limited filter&rsquo;s ratio, represented by 𝛾, significantly impacts rendering quality, with a 𝛾 value of 50% yielding the most favorable outcomes, emphasizing the advantage of spectral pruning in preserving important high-frequency details and low-frequency background (Fig. 4).</li>
+</ul>
+</li>
+</ul>
+<p align="center">
+    <img src='tab3.png' width="600">
+</p>
+<p align="center">
+    Table 2. Ablations of neural compensation module size.
+</p>  
+<p align="center">
+    <img src='fig6.png' width="600">
+</p>
+<p align="center">
+    Fig 5. Visualization with and without neural compensation.
+</p>  
+<ul>
+<li><strong>The compensation performance of the network:</strong>
+<ul>
+<li>Employing the neural compensation module enhances performance across all sampling rates evide(Table 2, Fig. 5), highlighting its compensatory capability in mitigating performance drops caused by spectral pruning and effectively modeling the relationship between primitives.</li>
+</ul>
+</li>
+<li><strong>Neural Compensation Module Size:</strong>
+<ul>
+<li>Increasing the size of the neural compensation module does not necessarily enhance rendering quality (Table 2), aligning with findings from ADOP and indicating a balance between quality and memory usage.</li>
+</ul>
+</li>
+</ul>
+<h2 id="conclusion">
+  Conclusion
+  <a class="anchor" href="#conclusion">#</a>
+</h2>
+<ul>
+<li>They propose SUNDAE, a novel approach to spectrally prune Gaussian fields with neural compensation, efficiently capturing the relationship between Gaussian primitives using graph signal processing and blending information to offset pruning-induced information loss.</li>
+<li>By leveraging spatial information among Gaussian primitives to construct a graph and spectrally pruning less significant ones, they employ a lightweight neural network to compensate for quality degradation post-pruning.</li>
+<li>Experimental findings demonstrate SUNDAE&rsquo;s ability to maintain the efficiency of 3DGS while significantly reducing its size across various scenarios.</li>
+</ul>
 </article>
  
       
@@ -630,9 +811,9 @@ https://github.com/alex-shpak/hugo-book
   <div class="flex flex-wrap justify-between">
 
 
-  <div><a class="flex align-center" href="https://github.com/effml-postech/blog-post/commit/da90428444034b6b22e3a6d017607321c43cb2e1" title='Last modified by effml-postech | May 14, 2024' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/effml-postech/blog-post/commit/c3fe7d851b05ef43a225cc5bdb01e0a7f7b5ce26" title='Last modified by YoonChiHo | May 19, 2024' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="" />
-      <span>May 14, 2024</span>
+      <span>May 19, 2024</span>
     </a>
   </div>
 
@@ -673,7 +854,33 @@ https://github.com/alex-shpak/hugo-book
       <div class="book-toc-content">
         
   
-<nav id="TableOfContents"></nav>
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#summary">Summary</a>
+      <ul>
+        <li><a href="#conventional-3d-gaussian-splatting-3dgs">Conventional 3D Gaussian Splatting (3DGS)</a></li>
+        <li><a href="#proposed-sundae">Proposed SUNDAE</a></li>
+      </ul>
+    </li>
+    <li><a href="#introduction">Introduction</a>
+      <ul>
+        <li><a href="#3dgs">3DGS</a></li>
+        <li><a href="#spectral-graph-pruning">Spectral graph pruning</a></li>
+        <li><a href="#neural-compensation">Neural compensation</a></li>
+        <li><a href="#contributions">Contributions</a></li>
+      </ul>
+    </li>
+    <li><a href="#methods">Methods</a></li>
+    <li><a href="#results">Results</a>
+      <ul>
+        <li><a href="#quantitative-results">Quantitative Results</a></li>
+        <li><a href="#qualitative-results">Qualitative Results</a></li>
+        <li><a href="#ablation-study">Ablation Study</a></li>
+      </ul>
+    </li>
+    <li><a href="#conclusion">Conclusion</a></li>
+  </ul>
+</nav>
 
 
  

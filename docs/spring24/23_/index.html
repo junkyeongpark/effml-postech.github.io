@@ -20,7 +20,7 @@ Byte models expand traditional language models to the byte level, starting from 
 <link rel="canonical" href="http://localhost:1313/docs/spring24/23_/">
 <link rel="stylesheet" href="/book.min.309b7ed028807cdb68d8d61e26d609f48369c098dbf5e4d8c0dcf4cdf49feafc.css" integrity="sha256-MJt&#43;0CiAfNto2NYeJtYJ9INpwJjb9eTYwNz0zfSf6vw=" crossorigin="anonymous">
   <script defer src="/flexsearch.min.js"></script>
-  <script defer src="/en.search.min.fcd41ff32e407b953b0dbf671d853ce898e5930ff1644f83f6ddaf8cdc313b0d.js" integrity="sha256-/NQf8y5Ae5U7Db9nHYU86Jjlkw/xZE&#43;D9t2vjNwxOw0=" crossorigin="anonymous"></script>
+  <script defer src="/en.search.min.40a19fd96c0bd14399c31c2d91678497cfd6a887d0819defb7ef156a24a9c4d0.js" integrity="sha256-QKGf2WwL0UOZwxwtkWeEl8/WqIfQgZ3vt&#43;8VaiSpxNA=" crossorigin="anonymous"></script>
 
   
 
@@ -615,6 +615,13 @@ https://github.com/alex-shpak/hugo-book
         <li><a href="#exploring-bgpt"><strong>Exploring bGPT</strong></a></li>
         <li><a href="#applications">Applications</a></li>
         <li><a href="#experiment">Experiment</a></li>
+      </ul>
+    </li>
+  </ul>
+
+  <ul>
+    <li>
+      <ul>
         <li><a href="#conclusion-and-future-work"><strong>Conclusion and Future Work</strong></a></li>
       </ul>
     </li>
@@ -758,7 +765,94 @@ The bGPT model was trained under various settings:</p>
 <ul>
 <li><strong>Text Processing</strong>: bGPTwiki showed high classification accuracy on the AG News dataset, indicating bGPT&rsquo;s strong performance in text-based tasks.</li>
 <li><strong>Audio Processing</strong>: bGPTlibri demonstrated excellent performance on the Speech Commands v2 dataset, showcasing its high potential in audio processing.</li>
-<li><strong>Image Processing</strong>: bGPTimage recorded high accuracy on the CIFAR-10 dataset but showed somewhat lower performance on ImageNet. This suggests that while bGPT works well with relatively simple images, it may have limitations with more complex images.</li>
+<li><strong>Image Processing</strong>: bGPTimage recorded high accuracy on the CIFAR-10 dataset but showed somewhat lower performance on ImageNet. This suggests that while bGPT works well with relatively simple images, it may have limitations with more complex images.
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>| AG News (4 classes) |</th>
+<th></th>
+<th>CIFAR-10 (10 classes) |</th>
+<th></th>
+<th>Speech Commands v2 (36 classes) |</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>BPB</td>
+<td>Acc (%)</td>
+<td>BPB</td>
+<td>Acc (%)</td>
+<td>BPB</td>
+</tr>
+<tr>
+<td>&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;</td>
+<td>&mdash;&mdash;&mdash;</td>
+<td>&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-</td>
+<td>&mdash;&mdash;&mdash;&ndash;</td>
+<td>&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-</td>
+<td>&mdash;&mdash;&mdash;&ndash;</td>
+</tr>
+<tr>
+<td>bGPT_random</td>
+<td>1.3496</td>
+<td>84.74</td>
+<td>3.4928</td>
+<td>76.73</td>
+<td>1.5414</td>
+</tr>
+<tr>
+<td>bGPT_wiki</td>
+<td><strong>1.0639</strong></td>
+<td><strong>92.49</strong></td>
+<td>3.6663</td>
+<td>77.02</td>
+<td>1.5719</td>
+</tr>
+<tr>
+<td>bGPT_image</td>
+<td>1.4179</td>
+<td>83.16</td>
+<td><strong>3.1234</strong></td>
+<td><strong>88.69</strong></td>
+<td>1.5326</td>
+</tr>
+<tr>
+<td>bGPT_libri</td>
+<td>1.3993</td>
+<td>83.59</td>
+<td>3.3345</td>
+<td>83.51</td>
+<td><strong>1.4818</strong></td>
+</tr>
+<tr>
+<td>bGPT_signal</td>
+<td>1.4058</td>
+<td>83.80</td>
+<td>3.1554</td>
+<td>87.65</td>
+<td>1.4898</td>
+</tr>
+<tr>
+<td>bGPT_mix</td>
+<td>1.0935</td>
+<td>91.75</td>
+<td>3.2279</td>
+<td>84.32</td>
+<td>1.5086</td>
+</tr>
+<tr>
+<td>Baselines</td>
+<td>0.9237</td>
+<td>94.50</td>
+<td>—</td>
+<td><strong>98.13</strong></td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+</li>
 </ul>
 <p><em><strong>2.  Algorithm and Hardware Simulation</strong></em></p>
 <p><strong>Experiment Overview</strong>
@@ -770,6 +864,14 @@ bGPT&rsquo;s performance was evaluated in the following two key areas:</p>
 <li><strong>CPU State Modeling</strong>: CPU state modeling assesses how bGPT predicts and updates the state of a CPU based on a given set of machine instructions. This is particularly useful for understanding and predicting hardware operations.</li>
 </ul>
 <p><strong>Results and Analysis</strong></p>
+<h1 id="two-images-side-by-side">
+  Two Images Side by Side
+  <a class="anchor" href="#two-images-side-by-side">#</a>
+</h1>
+<p float="center">
+  <img src="dataconversion.JPG" alt="Image 1" width="400" />
+  <img src="cpumodeling.JPG" alt="Image 2" width="400" /> 
+</p>
 <ul>
 <li><strong>Data Conversion Performance</strong>: bGPT performed the conversion between MIDI and ABC notation with high accuracy. Notably, it also showed high accuracy in converting MIDI back to ABC notation, indicating that bGPT successfully learned the inherent structures and patterns of the data.</li>
 <li><strong>CPU State Modeling Performance</strong>: bGPT accurately predicted the resulting state of CPUs from an initial state across a variety of CPU instructions. It achieved over 99% accuracy even with complex instruction sequences, demonstrating bGPT&rsquo;s detailed understanding of the internal workings of hardware.</li>
@@ -797,9 +899,9 @@ bGPT&rsquo;s performance was evaluated in the following two key areas:</p>
   <div class="flex flex-wrap justify-between">
 
 
-  <div><a class="flex align-center" href="https://github.com/effml-postech/blog-post/commit/a11180fff1bb5106d8afcf2fd4a8ca51492d81bd" title='Last modified by effml-postech | May 18, 2024' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/effml-postech/blog-post/commit/558a3b809cc5c656b4ab78798bd6d41cd1dc321a" title='Last modified by hellok0314 | May 19, 2024' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="" />
-      <span>May 18, 2024</span>
+      <span>May 19, 2024</span>
     </a>
   </div>
 
@@ -847,6 +949,13 @@ bGPT&rsquo;s performance was evaluated in the following two key areas:</p>
         <li><a href="#exploring-bgpt"><strong>Exploring bGPT</strong></a></li>
         <li><a href="#applications">Applications</a></li>
         <li><a href="#experiment">Experiment</a></li>
+      </ul>
+    </li>
+  </ul>
+
+  <ul>
+    <li>
+      <ul>
         <li><a href="#conclusion-and-future-work"><strong>Conclusion and Future Work</strong></a></li>
       </ul>
     </li>
