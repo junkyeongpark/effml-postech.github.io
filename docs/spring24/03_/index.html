@@ -3,35 +3,13 @@
 <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="5.Unit Scaling # 5.1 A framework for scaling computational graphs # Computational Graphs
-Forward and backward graphs
-Scaled ops
-Proposition 5.1
-Scaled computational graph
-Constraint-scaled computational graphs
-Theorem 5.2
-5.2 A scaling strategy for unit variance # Unit scaled computational graphs
-Selecting scaling factors
-5.3 Weighted addition # 5.4 Recipe # 5.5 Example # 6. Results # 6.1 Character language modelling # Experimental Setup
-Results
-6.2 Masked language modelling # Experimental Setup">
+<meta name="description" content="Unit Scaling # Unit scaling is proposed to address the limitations of existing methods for managing scale in typical models. A model is considered unit-scaled if its activations, weights, and gradients have approximately unit variance at initialization. This is achieved by inserting scaling factors into the forward and backward passes. Unlike loss scaling, which requires an empirically determined hyperparameter or an adaptive algorithm, unit scaling determines these scales based on a set of rules for each operation, approximately preserving the variance of the inputs.">
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
 <meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/docs/spring24/03_/">
   <meta property="og:site_name" content="Efficient ML Systems">
   <meta property="og:title" content="Efficient ML Systems">
-  <meta property="og:description" content="5.Unit Scaling # 5.1 A framework for scaling computational graphs # Computational Graphs
-Forward and backward graphs
-Scaled ops
-Proposition 5.1
-Scaled computational graph
-Constraint-scaled computational graphs
-Theorem 5.2
-5.2 A scaling strategy for unit variance # Unit scaled computational graphs
-Selecting scaling factors
-5.3 Weighted addition # 5.4 Recipe # 5.5 Example # 6. Results # 6.1 Character language modelling # Experimental Setup
-Results
-6.2 Masked language modelling # Experimental Setup">
+  <meta property="og:description" content="Unit Scaling # Unit scaling is proposed to address the limitations of existing methods for managing scale in typical models. A model is considered unit-scaled if its activations, weights, and gradients have approximately unit variance at initialization. This is achieved by inserting scaling factors into the forward and backward passes. Unlike loss scaling, which requires an empirically determined hyperparameter or an adaptive algorithm, unit scaling determines these scales based on a set of rules for each operation, approximately preserving the variance of the inputs.">
   <meta property="og:locale" content="en-us">
   <meta property="og:type" content="website">
 <title>03 | Efficient ML Systems</title>
@@ -40,7 +18,7 @@ Results
 <link rel="canonical" href="http://localhost:1313/docs/spring24/03_/">
 <link rel="stylesheet" href="/book.min.309b7ed028807cdb68d8d61e26d609f48369c098dbf5e4d8c0dcf4cdf49feafc.css" integrity="sha256-MJt&#43;0CiAfNto2NYeJtYJ9INpwJjb9eTYwNz0zfSf6vw=" crossorigin="anonymous">
   <script defer src="/flexsearch.min.js"></script>
-  <script defer src="/en.search.min.40a19fd96c0bd14399c31c2d91678497cfd6a887d0819defb7ef156a24a9c4d0.js" integrity="sha256-QKGf2WwL0UOZwxwtkWeEl8/WqIfQgZ3vt&#43;8VaiSpxNA=" crossorigin="anonymous"></script>
+  <script defer src="/en.search.min.67cbf4bdd33ed134ec05537482b19a38f17580ff8e816e1d7c5fd70e11bbddfc.js" integrity="sha256-Z8v0vdM&#43;0TTsBVN0grGaOPF1gP&#43;OgW4dfF/XDhG73fw=" crossorigin="anonymous"></script>
 
   
 
@@ -630,23 +608,18 @@ https://github.com/alex-shpak/hugo-book
   
 <nav id="TableOfContents">
   <ul>
-    <li><a href="#5unit-scaling">5.Unit Scaling</a>
+    <li><a href="#unit-scaling">Unit Scaling</a>
       <ul>
-        <li><a href="#51-a-framework-for-scaling-computational-graphs">5.1 A framework for scaling computational graphs</a></li>
-        <li><a href="#52-a-scaling-strategy-for-unit-variance">5.2 A scaling strategy for unit variance</a></li>
-        <li><a href="#53-weighted-addition">5.3 Weighted addition</a></li>
-        <li><a href="#54-recipe">5.4 Recipe</a></li>
-        <li><a href="#55-example">5.5 Example</a></li>
+        <li><a href="#a-framework-for-scaling-computational-graphs">A framework for scaling computational graphs</a></li>
+        <li><a href="#a-scaling-strategy-for-unit-variance">A scaling strategy for unit variance</a></li>
+        <li><a href="#weighted-addition">Weighted addition</a></li>
+        <li><a href="#recipe">Recipe</a></li>
+        <li><a href="#example">Example</a></li>
       </ul>
     </li>
-    <li><a href="#6-results">6. Results</a>
-      <ul>
-        <li><a href="#61-character-language-modelling">6.1 Character language modelling</a></li>
-        <li><a href="#62-masked-language-modelling">6.2 Masked language modelling</a></li>
-      </ul>
-    </li>
-    <li><a href="#7-related-work">7. Related Work</a></li>
-    <li><a href="#8-discussion">8. Discussion</a></li>
+    <li><a href="#results">Results</a></li>
+    <li><a href="#related-work">Related Work</a></li>
+    <li><a href="#discussion">Discussion</a></li>
   </ul>
 </nav>
 
@@ -659,67 +632,267 @@ https://github.com/alex-shpak/hugo-book
 
       
       
-  <article class="markdown book-article"><h2 id="5unit-scaling">
-  5.Unit Scaling
-  <a class="anchor" href="#5unit-scaling">#</a>
+  <article class="markdown book-article"><h2 id="unit-scaling">
+  Unit Scaling
+  <a class="anchor" href="#unit-scaling">#</a>
 </h2>
-<h3 id="51-a-framework-for-scaling-computational-graphs">
-  5.1 A framework for scaling computational graphs
-  <a class="anchor" href="#51-a-framework-for-scaling-computational-graphs">#</a>
+<p>Unit scaling is proposed to address the limitations of existing methods for managing scale in typical models. A model is considered unit-scaled if its activations, weights, and gradients have approximately unit variance at initialization. This is achieved by inserting scaling factors into the forward and backward passes. Unlike loss scaling, which requires an empirically determined hyperparameter or an adaptive algorithm, unit scaling determines these scales based on a set of rules for each operation, approximately preserving the variance of the inputs. This leads to global unit scaling throughout the model, ensuring tensor values are centered within the exponent range at initialization, providing headroom during training to avoid going out of range.</p>
+<h3 id="a-framework-for-scaling-computational-graphs">
+  A framework for scaling computational graphs
+  <a class="anchor" href="#a-framework-for-scaling-computational-graphs">#</a>
 </h3>
-<p><strong>Computational Graphs</strong></p>
-<p><strong>Forward and backward graphs</strong></p>
-<p><strong>Scaled ops</strong></p>
-<p><strong>Proposition 5.1</strong></p>
-<p><strong>Scaled computational graph</strong></p>
-<p><strong>Constraint-scaled computational graphs</strong></p>
-<p><strong>Theorem 5.2</strong></p>
-<h3 id="52-a-scaling-strategy-for-unit-variance">
-  5.2 A scaling strategy for unit variance
-  <a class="anchor" href="#52-a-scaling-strategy-for-unit-variance">#</a>
-</h3>
-<p><strong>Unit scaled computational graphs</strong></p>
-<p><strong>Selecting scaling factors</strong></p>
-<h3 id="53-weighted-addition">
-  5.3 Weighted addition
-  <a class="anchor" href="#53-weighted-addition">#</a>
-</h3>
-<h3 id="54-recipe">
-  5.4 Recipe
-  <a class="anchor" href="#54-recipe">#</a>
-</h3>
-<h3 id="55-example">
-  5.5 Example
-  <a class="anchor" href="#55-example">#</a>
-</h3>
+<ul>
+<li>
+<p>Computational Graphs</p>
+<ul>
+<li>Represent model by the differentiable function 
+<link rel="stylesheet" href="/katex/katex.min.css" />
+<script defer src="/katex/katex.min.js"></script>
+<script defer src="/katex/auto-render.min.js" onload="renderMathInElement(document.body);"></script><span>
+  \(f_{model}(x_1,...,x_m)\)
+</span>
+</li>
+<li>Describe the structure of such a model using a directed acyclic graph (DAG) denoted <span>
+  \(\mathcal{G} =(\mathcal{V}, \mathcal{E}) \)
+</span>
+</li>
+<li>This kind of graph is commonly known as a <em>computational graph</em>, with vertices as <em>nodes</em> and their corresponding functions
+as <em>ops</em>.</li>
+</ul>
+</li>
+<li>
+<p>Forward and backward graphs</p>
+<ul>
+<li>We refer to the computational graph corresponding to <span>
+  \(f_{model}\)
+</span>
+ as the <strong>forward graph</strong></li>
+<li>In deep learning we typically apply reverse-mode automatic differentiation to the forward graph to create a second computational graph whose output nodes represent the partial derivatives of the model with respect to its inputs: <span>
+  \( \frac{\partial f_{model}}{\partial x_i}, \forall i \in[1 . . m] \)
+</span>
+. We call this the <em>backward graph</em></li>
+</ul>
+</li>
+<li>
+<p>Scaled ops</p>
+<ul>
+<li>Given an op <span>
+  \(f\left(x_1, \ldots, x_k\right)\)
+</span>
+, we define the <em>scaled op</em> <span>
+  \( f^*\left(x_1, \ldots, x_k, \alpha, \beta_1, \ldots, \beta_k\right) \)
+</span>
+ with <em>scaling factors</em> <span>
+  \( \alpha, \beta_1, \ldots, \beta_k \in \mathbb{R}^{&#43;} \)
+</span>
+, such that</li>
+</ul>
+</li>
+</ul>
 <p align="center">
-    <img src='./Figure4.png' width="600">
+    <span>
+  \(f^* &amp; \triangleq \alpha \cdot f\left(x_1, \ldots, x_k\right)\)
+</span>
+
+<pre><code><span>
+  \( f_{\text {grad }}^*\left(x_1, \ldots x_k, g\right)_i &amp; \triangleq \beta_i \cdot f_{\text {grad }}\left(x_1, \ldots x_k, g\right)_i, \forall i \in[1 . . k] \)
+</span>
+
+</code></pre>
 </p>
-<h2 id="6-results">
-  6. Results
-  <a class="anchor" href="#6-results">#</a>
+<ul>
+<li>
+<p>Scaled computational graph</p>
+<ul>
+<li>A scaled computational graph is one where every op <span>
+  \(f\)
+</span>
+ in the forward graph is replaced by a scaled equivalent <span>
+  \(f^{*}\)
+</span>
+, with the backward graph then generated to produce <span>
+  \(f^{*}_{grad}\)
+</span>
+ grad for each <span>
+  \(f_{grad}\)
+</span>
+, using any choice of scaling factors.</li>
+</ul>
+</li>
+<li>
+<p>Constraint-scaled computational graphs</p>
+<ul>
+<li>A constraint-scaled computational graph is a scaled computational graph where we restrict the scaling factors of ops that consume non-cut-edge variables in the following way: for any edge <span>
+  \(e \notin \mathcal{C}\)
+</span>
+, we require the op consuming the variable <span>
+  \(x_e\)
+</span>
+ to have scaling factors <span>
+  \(\alpha = \beta_e f\)
+</span>
+.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Proposition 5.1</strong></p>
+<p><em>For any scaled op, there is an equivalent unscaled op with the same training dynamics under a firstorder optimiser.</em></p>
+<p><strong>Theorem 5.2</strong></p>
+<p><em>A constraint-scaled computational graph itself represents a scaled op.</em></p>
+<h3 id="a-scaling-strategy-for-unit-variance">
+  A scaling strategy for unit variance
+  <a class="anchor" href="#a-scaling-strategy-for-unit-variance">#</a>
+</h3>
+<ul>
+<li>
+<p>Unit scaled computational graphs</p>
+<ul>
+<li>Initially set aside any scale constraints, and calculate the scaling factors that give each op expected unit variance outputs (this process is covered below).</li>
+<li>Now resolve any scale constraints by taking each constrained group <span>
+  \( {\alpha, \beta_1, \ldots, \beta_l } \)
+</span>
+ and selecting the geometric mean <span>
+  \( \left(\alpha, \beta_1, \ldots, \beta_l \right)^\frac{1}{l&#43;1} \)
+</span>
+</li>
+</ul>
+</li>
+<li>
+<p>Selecting scaling factors</p>
+<ul>
+<li>Assuming unit-scaled inputs to <span>
+  \( y = f(x_i,\ldots,x_k) \)
+</span>
+, derive the output scale <span>
+  \( \sigma_Y \)
+</span>
+ and set the forward scaling factor <span>
+  \( \alpha = 1/\sigma_Y \)
+</span>
+ . Repeat this process for <span>
+  \( x_i&#39;=f_{grad}(\ldots)_i, \forall i \in[1 . . k] \)
+</span>
+, to obtain the gradient scale <span>
+  \( \sigma_{x_i&#39;} \)
+</span>
+ i and set the backward scaling factor <span>
+  \( \beta_i = 1/\sigma_{x_i&#39;} \)
+</span>
+ .</li>
+</ul>
+</li>
+</ul>
+<h3 id="weighted-addition">
+  Weighted addition
+  <a class="anchor" href="#weighted-addition">#</a>
+</h3>
+<p>When tensors of different scales, such as those in residual layers, losses, and positional encodings, are added, simply adding them can adversely affect performance. To address this, we propose using weighted_add. In this approach, we can maintain unit scale while performing operations using a scaled identity function.</p>
+<h3 id="recipe">
+  Recipe
+  <a class="anchor" href="#recipe">#</a>
+</h3>
+<p>We now outline a high-level recipe for a unit-scaled model:</p>
+<ol>
+<li>Initialise non-bias parameters with unit variance.</li>
+<li>Calculate scaling factors for all scaled ops.</li>
+<li>Identify non-cut-edges, and constrain the ops consumingthem to have <span>
+  \( \alpha = \beta \)
+</span>
+ by taking the geometric mean.</li>
+<li>Replace adds with weighted adds.</li>
+</ol>
+<h3 id="example">
+  Example
+  <a class="anchor" href="#example">#</a>
+</h3>
+<p>Using the unit scaling recipe, we first build a scaled op, and then a full scaled layer. Consider a scaled projection op with learnable weights:</p>
+<p align="center">
+    <span>
+  \( \operatorname{matmul}^*(X, W) &amp; =\alpha \cdot X W \)
+</span>
+
+<pre><code><span>
+  \( \operatorname{matmul}_{\text {grad }}^*(X, W, G)_1 &amp; =\beta_1 \cdot G W^{\top}  \)
+</span>
+
+
+<span>
+  \( \operatorname{matmul}_{\text {grad }}^*(X, W, G)_2 &amp; =\beta_2 \cdot X^{\top} G \)
+</span>
+
+</code></pre>
+</p>
+for input <span>
+  \( X \in \mathbb{R}^{b \times m}  \)
+</span>
+, weight  <span>
+  \( W \in \mathbb{R}^{m \times n} \)
+</span>
+, output <span>
+  \( \mathbb{R}^{b \times n} \)
+</span>
+ and incoming gradients <span>
+  \( G \in \mathbb{R}^{b \times n} \)
+</span>
+
+<p>We show code for the above in Figure 3, which also gives a scaled layer for the Transformer FFN</p>
+<p align="center">
+    <img src='./Figure3.PNG' width="900">
+</p>
+<p align="center">
+    Fig3. PyTorch examples
+</p>
+<h2 id="results">
+  Results
+  <a class="anchor" href="#results">#</a>
 </h2>
-<h3 id="61-character-language-modelling">
-  6.1 Character language modelling
-  <a class="anchor" href="#61-character-language-modelling">#</a>
-</h3>
-<p><strong>Experimental Setup</strong></p>
-<p><strong>Results</strong></p>
-<h3 id="62-masked-language-modelling">
-  6.2 Masked language modelling
-  <a class="anchor" href="#62-masked-language-modelling">#</a>
-</h3>
-<p><strong>Experimental Setup</strong></p>
-<p><strong>Results</strong></p>
-<h2 id="7-related-work">
-  7. Related Work
-  <a class="anchor" href="#7-related-work">#</a>
+<ul>
+<li>
+<p>Character language modelling</p>
+<ul>
+<li>
+<p>Experimental Setup</p>
+</li>
+<li>
+<p>Results</p>
+</li>
+</ul>
+</li>
+</ul>
+<p align="center">
+    <img src='./Figure4.png' width="400">
+</p>
+<p align="center">
+    Fig4. Character language modelling, showing validation bits per character over a wide range of models
+</p>
+<ul>
+<li>
+<p>Masked language modelling</p>
+<ul>
+<li>
+<p>Experimental Setup</p>
+</li>
+<li>
+<p>Results</p>
+</li>
+</ul>
+</li>
+</ul>
+<p align="center">
+    <img src='./Table2.PNG' width="800">
+</p>
+<p align="center">
+    Table2. Downstream performance of regular and unit-scaled BERT models
+</p>
+<h2 id="related-work">
+  Related Work
+  <a class="anchor" href="#related-work">#</a>
 </h2>
 <p><strong>Variance scaling analysis</strong></p>
 <p><strong>FP8 inference</strong></p>
-<h2 id="8-discussion">
-  8. Discussion
-  <a class="anchor" href="#8-discussion">#</a>
+<h2 id="discussion">
+  Discussion
+  <a class="anchor" href="#discussion">#</a>
 </h2>
 </article>
  
@@ -730,9 +903,9 @@ https://github.com/alex-shpak/hugo-book
   <div class="flex flex-wrap justify-between">
 
 
-  <div><a class="flex align-center" href="https://github.com/effml-postech/blog-post/commit/f92dbecf87c26937da7eb5b6b3c3312e6172221f" title='Last modified by effml-postech | May 19, 2024' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/effml-postech/blog-post/commit/506c82892816ea0658cb0dcb907d1f8a130ed699" title='Last modified by MoonSeongRok | May 20, 2024' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="" />
-      <span>May 19, 2024</span>
+      <span>May 20, 2024</span>
     </a>
   </div>
 
@@ -775,23 +948,18 @@ https://github.com/alex-shpak/hugo-book
   
 <nav id="TableOfContents">
   <ul>
-    <li><a href="#5unit-scaling">5.Unit Scaling</a>
+    <li><a href="#unit-scaling">Unit Scaling</a>
       <ul>
-        <li><a href="#51-a-framework-for-scaling-computational-graphs">5.1 A framework for scaling computational graphs</a></li>
-        <li><a href="#52-a-scaling-strategy-for-unit-variance">5.2 A scaling strategy for unit variance</a></li>
-        <li><a href="#53-weighted-addition">5.3 Weighted addition</a></li>
-        <li><a href="#54-recipe">5.4 Recipe</a></li>
-        <li><a href="#55-example">5.5 Example</a></li>
+        <li><a href="#a-framework-for-scaling-computational-graphs">A framework for scaling computational graphs</a></li>
+        <li><a href="#a-scaling-strategy-for-unit-variance">A scaling strategy for unit variance</a></li>
+        <li><a href="#weighted-addition">Weighted addition</a></li>
+        <li><a href="#recipe">Recipe</a></li>
+        <li><a href="#example">Example</a></li>
       </ul>
     </li>
-    <li><a href="#6-results">6. Results</a>
-      <ul>
-        <li><a href="#61-character-language-modelling">6.1 Character language modelling</a></li>
-        <li><a href="#62-masked-language-modelling">6.2 Masked language modelling</a></li>
-      </ul>
-    </li>
-    <li><a href="#7-related-work">7. Related Work</a></li>
-    <li><a href="#8-discussion">8. Discussion</a></li>
+    <li><a href="#results">Results</a></li>
+    <li><a href="#related-work">Related Work</a></li>
+    <li><a href="#discussion">Discussion</a></li>
   </ul>
 </nav>
 

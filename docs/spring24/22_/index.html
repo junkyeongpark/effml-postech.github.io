@@ -3,7 +3,8 @@
 <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Larimar: Large Language Models with Episodic Memory Control # Authors: Payel Das (IBM AI Research), Subhajit Chaudhury (IBM AI Research) et.al
+<meta name="description" content="Larimar: Large Language Models with Episodic Memory Control # Posted by: Sunggyu Jang, Hyeonwoo Park
+Authors: Payel Das (IBM AI Research), Subhajit Chaudhury (IBM AI Research) et.al
 Background # Pre-trained Large Language Models (LLMs) have demonstrated outstanding performance on various Natural Language Processing (NLP) tasks. However, LLMs have faced a lot of challenges at the same time. Especially, in this post, we focus on the &ldquo;knowledge update&rdquo; problem.
 Knowledge update in LLM research # In order to keep pre-trained LLMs fact-relevant, safe, and ethical after deploymemnt, the knowledge of the LLM needs to be constantly updated.">
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
@@ -11,7 +12,8 @@ Knowledge update in LLM research # In order to keep pre-trained LLMs fact-releva
 <meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/docs/spring24/22_/">
   <meta property="og:site_name" content="Efficient ML Systems">
   <meta property="og:title" content="Efficient ML Systems">
-  <meta property="og:description" content="Larimar: Large Language Models with Episodic Memory Control # Authors: Payel Das (IBM AI Research), Subhajit Chaudhury (IBM AI Research) et.al
+  <meta property="og:description" content="Larimar: Large Language Models with Episodic Memory Control # Posted by: Sunggyu Jang, Hyeonwoo Park
+Authors: Payel Das (IBM AI Research), Subhajit Chaudhury (IBM AI Research) et.al
 Background # Pre-trained Large Language Models (LLMs) have demonstrated outstanding performance on various Natural Language Processing (NLP) tasks. However, LLMs have faced a lot of challenges at the same time. Especially, in this post, we focus on the “knowledge update” problem.
 Knowledge update in LLM research # In order to keep pre-trained LLMs fact-relevant, safe, and ethical after deploymemnt, the knowledge of the LLM needs to be constantly updated.">
   <meta property="og:locale" content="en-us">
@@ -22,7 +24,7 @@ Knowledge update in LLM research # In order to keep pre-trained LLMs fact-releva
 <link rel="canonical" href="http://localhost:1313/docs/spring24/22_/">
 <link rel="stylesheet" href="/book.min.309b7ed028807cdb68d8d61e26d609f48369c098dbf5e4d8c0dcf4cdf49feafc.css" integrity="sha256-MJt&#43;0CiAfNto2NYeJtYJ9INpwJjb9eTYwNz0zfSf6vw=" crossorigin="anonymous">
   <script defer src="/flexsearch.min.js"></script>
-  <script defer src="/en.search.min.40a19fd96c0bd14399c31c2d91678497cfd6a887d0819defb7ef156a24a9c4d0.js" integrity="sha256-QKGf2WwL0UOZwxwtkWeEl8/WqIfQgZ3vt&#43;8VaiSpxNA=" crossorigin="anonymous"></script>
+  <script defer src="/en.search.min.67cbf4bdd33ed134ec05537482b19a38f17580ff8e816e1d7c5fd70e11bbddfc.js" integrity="sha256-Z8v0vdM&#43;0TTsBVN0grGaOPF1gP&#43;OgW4dfF/XDhG73fw=" crossorigin="anonymous"></script>
 
   
 
@@ -623,7 +625,15 @@ https://github.com/alex-shpak/hugo-book
     <li><a href="#contributions">Contributions</a></li>
     <li><a href="#model-architecture">Model architecture</a></li>
     <li><a href="#memory-operations">Memory Operations</a></li>
-    <li><a href="#results">Results</a></li>
+    <li><a href="#results">Results</a>
+      <ul>
+        <li><a href="#wall-clock-time">Wall Clock time</a></li>
+        <li><a href="#single-fact-editing">Single Fact Editing</a></li>
+        <li><a href="#sequential-fact-editing">Sequential Fact Editing</a></li>
+        <li><a href="#selective-forgetting">Selective Forgetting</a></li>
+        <li><a href="#recall-performance">Recall Performance</a></li>
+      </ul>
+    </li>
     <li><a href="#conclusion">Conclusion</a></li>
     <li><a href="#references">References</a></li>
   </ul>
@@ -642,6 +652,7 @@ https://github.com/alex-shpak/hugo-book
   Larimar: Large Language Models with Episodic Memory Control
   <a class="anchor" href="#larimar-large-language-models-with-episodic-memory-control">#</a>
 </h1>
+<p><em>Posted by: Sunggyu Jang, Hyeonwoo Park</em></p>
 <p><em>Authors: Payel Das (IBM AI Research), Subhajit Chaudhury (IBM AI Research) et.al</em></p>
 <h2 id="background">
   Background
@@ -653,7 +664,7 @@ However, LLMs have faced a lot of challenges at the same time. Especially, in th
   Knowledge update in LLM research
   <a class="anchor" href="#knowledge-update-in-llm-research">#</a>
 </h3>
-<p>In order to keep pre-trained LLMs fact-relevant, safe, and ethical after deploymemnt, the knowledge of the LLM needs to be constantly updated. To be specific, model editing is mandatory to remove the undesired, incorrect, or obsolete facts from the LLM&rsquo;s &ldquo;memory&rdquo;, and optionally replace it with desired outcome. Firgures below shows why do we need knowledge update with detailed examples.</p>
+<p>In order to keep pre-trained LLMs fact-relevant, safe, and ethical after deploymemnt, the knowledge of the LLM needs to be constantly updated. To be specific, model editing is mandatory to remove the undesired, incorrect, or obsolete facts from the LLM&rsquo;s &ldquo;memory&rdquo;, and optionally replace it with desired outcome. Figures below illustrate why do we need knowledge update.</p>
 <p align="center">
     <img src='knowledge update.png' width="600">
 </p>
@@ -695,6 +706,9 @@ However, LLMs have faced a lot of challenges at the same time. Especially, in th
 <p align="center">
     <img src=brain.png width="400"> 
 </p>
+<p align="center">
+    (Fig6. Neocortex and the Hippocampus)
+</p>
 The Complementary Learning Systems (CLS) theory proposes a model that combines these complementary learning systems of the hippocampus and neocortex. The interaction between the neocortex and hippocampus in the brain is known to promote adaptive behavior through memorization and generalization. Furthermore, it is suggested that memory consolidation from the hippocampus to the neocortex is facilitated by the activation synchronized with multiple exact or false replays of the encoded experience in the hippocampus. This implies that the hippocampus functions as a generative associative network.
 <h2 id="contributions">
   Contributions
@@ -728,7 +742,7 @@ Recursive Search-Based Solution for Long Context Generalization: A simple recurs
     <img src='architecture.png' width="600">
 </p>
 <p align="center">
-    (Fig6. Larimar architecture)
+    (Fig7. Larimar architecture)
 </p>
 <h2 id="memory-operations">
   Memory Operations
@@ -738,6 +752,26 @@ Recursive Search-Based Solution for Long Context Generalization: A simple recurs
   Results
   <a class="anchor" href="#results">#</a>
 </h2>
+<h3 id="wall-clock-time">
+  Wall Clock time
+  <a class="anchor" href="#wall-clock-time">#</a>
+</h3>
+<h3 id="single-fact-editing">
+  Single Fact Editing
+  <a class="anchor" href="#single-fact-editing">#</a>
+</h3>
+<h3 id="sequential-fact-editing">
+  Sequential Fact Editing
+  <a class="anchor" href="#sequential-fact-editing">#</a>
+</h3>
+<h3 id="selective-forgetting">
+  Selective Forgetting
+  <a class="anchor" href="#selective-forgetting">#</a>
+</h3>
+<h3 id="recall-performance">
+  Recall Performance
+  <a class="anchor" href="#recall-performance">#</a>
+</h3>
 <h2 id="conclusion">
   Conclusion
   <a class="anchor" href="#conclusion">#</a>
@@ -765,9 +799,9 @@ Recursive Search-Based Solution for Long Context Generalization: A simple recurs
   <div class="flex flex-wrap justify-between">
 
 
-  <div><a class="flex align-center" href="https://github.com/effml-postech/blog-post/commit/79fa1343d7320a096c764d279966792d555a6799" title='Last modified by skjang238 | May 18, 2024' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/effml-postech/blog-post/commit/656537c322ba1f3c9a0a3860c8a8dcabd25db887" title='Last modified by kangnam4123 | May 20, 2024' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="" />
-      <span>May 18, 2024</span>
+      <span>May 20, 2024</span>
     </a>
   </div>
 
@@ -821,7 +855,15 @@ Recursive Search-Based Solution for Long Context Generalization: A simple recurs
     <li><a href="#contributions">Contributions</a></li>
     <li><a href="#model-architecture">Model architecture</a></li>
     <li><a href="#memory-operations">Memory Operations</a></li>
-    <li><a href="#results">Results</a></li>
+    <li><a href="#results">Results</a>
+      <ul>
+        <li><a href="#wall-clock-time">Wall Clock time</a></li>
+        <li><a href="#single-fact-editing">Single Fact Editing</a></li>
+        <li><a href="#sequential-fact-editing">Sequential Fact Editing</a></li>
+        <li><a href="#selective-forgetting">Selective Forgetting</a></li>
+        <li><a href="#recall-performance">Recall Performance</a></li>
+      </ul>
+    </li>
     <li><a href="#conclusion">Conclusion</a></li>
     <li><a href="#references">References</a></li>
   </ul>
